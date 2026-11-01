@@ -42,3 +42,13 @@ Critério de entrega dos itens futuros: testes determinísticos + documentos de 
 - [ ] Recontagem RDV e confronto criptográfico com BU original
 - [ ] Comparação entre registros da mesa e logs agregados mediante procedimentos legais; nenhuma coleta de CPF ou assinatura individual
 - [ ] Verificação de exportações TSE de comparecimento por seção com amostra real, inclusive exterior e transferências
+
+## Incremento 3 — sincronização automatizada e histórico
+- [x] Consulta recorrente CKAN TSE em três conjuntos eleitorais de 2026
+- [x] Registro histórico independente de consultas e versões de metadados na branch archive-history
+- [x] Captura opcional de originais em S3/R2 com chave imutável por SHA-256 e verificação oficial SHA-512 quando disponível
+- [x] API de listagem e link de download com assinatura temporária; histórico exibido no dashboard
+- [ ] Configurar bucket R2 exclusivo e segredos de GitHub Actions + serviço Render
+- [ ] Validar primeiro ciclo de sincronização e consistência do catálogo com resposta real CKAN
+- [ ] Expandir captura com orçamento e política de armazenamento para arquivos maiores que 250 MiB
+- [ ] Importar automaticamente lotes verificados ao PostgreSQL persistente após confirmação de escopo/layout
