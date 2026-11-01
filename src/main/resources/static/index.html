@@ -24,6 +24,8 @@
             <a class="nav-item active" href="#overview" data-view="overview"><span>▦</span> Visão geral</a>
             <a class="nav-item" href="#map" data-view="map"><span>◉</span> Mapa eleitoral</a>
             <a class="nav-item" href="#comparison" data-view="comparison"><span>⇄</span> Comparativo</a>
+            <a class="nav-item" href="#turnout" data-view="turnout"><span>▥</span> Abstenção</a>
+            <a class="nav-item" href="#biometrics" data-view="biometrics"><span>◈</span> Biometria</a>
             <a class="nav-item" href="#sources" data-view="sources"><span>▤</span> Fontes & evidências</a>
             <a class="nav-item" href="#methodology" data-view="methodology"><span>◇</span> Metodologia</a>
         </nav>
@@ -121,6 +123,34 @@
                 </div>
                 <div class="table-footer">Máximo de 150 resultados ordenados por variação absoluta; não é um ranking de fraude.</div>
             </section>
+            <div class="bottom-grid forensic-grid">
+                <section class="panel" id="turnout">
+                    <div class="panel-header"><div><div class="eyebrow">07 / AUDITORIA DE COMPARECIMENTO</div><h2>Abstenção por turno</h2></div><span class="panel-label">REGISTROS IMPORTADOS</span></div>
+                    <div class="evidence-panel-body">
+                        <div class="audit-metrics">
+                            <div><span>1º TURNO</span><strong id="turnout-first">—</strong><small id="turnout-first-info">Sem dados</small></div>
+                            <div><span>2º TURNO</span><strong id="turnout-second">—</strong><small id="turnout-second-info">Sem dados</small></div>
+                        </div>
+                        <div class="audit-change" id="turnout-delta">Comparação ainda não disponível.</div>
+                        <p>Fonte esperada: Detalhe da apuração por seção eleitoral (TSE). O número de aptos deve ser reconciliado antes de qualquer interpretação.</p>
+                        <div id="turnout-status" class="evidence-status">Sem arquivo de comparecimento importado.</div>
+                        <a href="https://dadosabertos.tse.jus.br/dataset/comparecimento-e-abstencao-2026" target="_blank" rel="noopener noreferrer">Conferir fonte oficial ↗</a>
+                    </div>
+                </section>
+                <section class="panel" id="biometrics">
+                    <div class="panel-header"><div><div class="eyebrow">08 / IDENTIFICAÇÃO DO ELEITOR</div><h2>Habilitação sem biometria</h2></div><span class="panel-label">EVENTOS DE LOG</span></div>
+                    <div class="evidence-panel-body">
+                        <div class="audit-metrics">
+                            <div><span>1º TURNO</span><strong id="biometric-first">—</strong><small id="biometric-first-info">Sem dados</small></div>
+                            <div><span>2º TURNO</span><strong id="biometric-second">—</strong><small id="biometric-second-info">Sem dados</small></div>
+                        </div>
+                        <div class="audit-change" id="biometric-delta">Comparação ainda não disponível.</div>
+                        <p>Separamos falta de cadastro biométrico e falha no reconhecimento. Contagens importadas exigem confirmação contra logs oficiais antes de serem consideradas auditadas.</p>
+                        <div id="biometric-status" class="evidence-status">Nenhum resumo de logs importado.</div>
+                        <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026-arquivos-transmitidos-para-totalizacao" target="_blank" rel="noopener noreferrer">Ver logs publicados pelo TSE ↗</a>
+                    </div>
+                </section>
+            </div>
             <div class="bottom-grid">
                 <section class="panel" id="sources">
                     <div class="panel-header"><div><div class="eyebrow">05 / PROVENIÊNCIA</div><h2>Fontes e cadeia de custódia</h2></div></div>

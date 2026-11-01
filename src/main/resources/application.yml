@@ -5,9 +5,9 @@ spring:
   application:
     name: tse-forensic-investigation
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/tse_forensic}
-    username: ${DB_USER:postgres}
-    password: ${DB_PASSWORD:postgres}
+    url: ${JDBC_DATABASE_URL:jdbc:h2:mem:tse_forensic;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
     hikari:
       maximum-pool-size: 5
   flyway:

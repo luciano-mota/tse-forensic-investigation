@@ -74,6 +74,7 @@ function setup() {
         updateRegion();
         renderMap();
         await loadMunicipalities();
+    await loadForensicPanels();
     });
     $("refresh").addEventListener("click", loadData);
     $("city-search").addEventListener("input", renderMunicipalities);
@@ -124,6 +125,7 @@ async function loadData() {
     updateRegion();
     renderMap();
     await loadMunicipalities();
+    await loadForensicPanels();
 }
 
 function renderMetrics() {
@@ -296,6 +298,7 @@ function selectUF(uf) {
     updateRegion();
     renderMap();
     loadMunicipalities();
+    loadForensicPanels();
 }
 
 function renderMap() {
@@ -351,3 +354,37 @@ function renderMap() {
 setup();
 loadData();
 loadGeometry();
+
+async function loadForensicPanels() {
+    const query = state.uf ? "?uf=" + encodeURIComponent(state.uf) : "";
+    const getSafe = async path => {
+        try { return await getJson(path + query); }
+        catch (e) { return null; }
+    };
+    const [turnout, biometric] = await Promise.all([
+        getSafe("/audits/turnout/comparison"),
+        getSafe("/audits/biometrics/comparison")
+    ]);
+    const display = (data, prefix, quantityField, detailField, changeKey) => {
+        if (!data) {
+            $(prefix + "-status").textContent = "API de auditoria indisponível.";
+            return;
+        }
+        const first = data.first, second = data.second;
+        const firstLoaded = first.sections > 0, secondLoaded = second.sections > 0;
+        $(prefix + "-first").textContent = firstLoaded ? pct(first[quantityField]) : "—";
+        $(prefix + "-second").textContent = secondLoaded ? pct(second[quantityField]) : "—";
+        $(prefix + "-first-info").textContent = firstLoaded ? votes(first[detailField]) + " seções" : "Sem dados";
+        $(prefix + "-second-info").textContent = secondLoaded ? votes(second[detailField]) + " seções" : "Sem dados";
+        const change = data[changeKey];
+        $(prefix + "-delta").textContent = change == null ?
+            "Dados incompletos para comparar turnos." :
+            (Number(change) > 0 ? "+" : "") + percentageFormat.format(Number(change)) +
+            " p.p. de variação (descrição, não comprovação de fraude)";
+        $(prefix + "-status").textContent = data.status === "DESCRIPTIVE_ONLY" ?
+            "Comparação descritiva disponível — verifique cobertura e fontes." :
+            "Sem cobertura de ambos os turnos.";
+    };
+    display(turnout, "turnout", "abstentionPercentage", "sections", "abstentionChangePp");
+    display(biometric, "biometric", "nonBiometricPercentage", "sections", "nonBiometricChangePp");
+}
