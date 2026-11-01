@@ -540,3 +540,11 @@ footer span{color:#8bbab7}
  .report-pdf-download{white-space:normal;overflow-wrap:anywhere}
 }
 @media(max-width:380px){.header-source{font-size:8px}.brand-lines strong{font-size:15px}.map-topline span:last-child{display:none}}
+
+/* AI explanations are optional and remain visually distinct from calculated findings. */
+.ai-explain-control{margin:0 0 24px;padding:14px 0;border-bottom:1px solid var(--line)}
+.ai-explain-control button{max-width:100%;min-height:44px}
+.ai-explain-control small{display:block;margin:10px 0;color:#89a6b0;font:11px/1.6 var(--mono)}
+#ai-explanation{white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px;line-height:1.8;color:#c7e0e6;margin-top:13px}
+#ai-explanation:empty{display:none}
+@media(max-width:650px){.ai-explain-control button{width:100%}}
