@@ -6,6 +6,7 @@
 - [x] Estrutura REST versionada `/api/v1`
 - [x] Importador de CSV/ZIP de votação por seção para agregações eleitorais municipais
 - [x] SHA-256 local por arquivo e importações idempotentes
+- [x] Conferência com snapshot publicado do resultado nacional (apenas cobertura completa)
 - [x] Dashboard dark com mapa UF, visão nacional/municipal, dois turnos
 - [x] Tabela de mudanças de participação por município, com ressalvas
 - [x] Fluxo GitHub Actions para build/testes

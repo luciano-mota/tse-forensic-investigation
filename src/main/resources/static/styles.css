@@ -132,3 +132,10 @@ footer span { color: #8cbbbe; }
 @media (max-width: 1200px) { .analysis-layout { grid-template-columns: minmax(0,1fr); }.map-canvas { height: 360px; } }
 @media (max-width: 850px) { .workspace { grid-template-columns: 1fr; }.sidebar { position: relative; height: auto; padding: 16px; gap: 15px; }.sidebar-eyebrow,.sidebar-bottom { display: none; }.nav { flex-direction: row; flex-wrap: wrap; }.nav-item { padding: 8px 10px; font-size: 11px; }.topbar { padding: 0 18px; }.main { padding: 22px 16px; }.metrics,.bottom-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }.breadcrumb { font-size: 8px; }.read-only { display: none; } }
 @media (max-width: 540px) { .metrics,.bottom-grid { grid-template-columns: 1fr; }.panel-header { padding: 17px; }.map-area { padding: 15px; }.map-canvas { height: 280px; }.topbar-actions { display: none; }.hero-meta { font-size: 8px; }.metric { padding: 18px; }.map-topline,.map-bottom { font-size: 8px; }.candidate-results,.result-region { padding-left: 16px; padding-right: 16px; }.municipalities-panel input { min-width: 0; width: 135px; }.panel-label { font-size: 8px; } }
+
+.reference-check { display: flex; gap: 16px; align-items: center; border: 1px solid #2b4452; background: #14202b; border-radius: 6px; padding: 13px 21px; margin: -1px 0 16px; color: #a8c5d4; font-size: 11px; }
+.reference-symbol { color: #79d6d5; font-size: 25px; }
+.reference-check strong { color: #d5eef0; font-size: 10px; letter-spacing: 1px; }
+.reference-check p { margin: 5px 0 0; color: #91a8bb; line-height: 1.5; }
+.reference-check a { font-size: 9px; letter-spacing: .7px; margin-left: auto; white-space: nowrap; color: #88d7dc; }
+@media (max-width: 540px) { .reference-check { flex-wrap: wrap; }.reference-check a { margin-left: 0; } }

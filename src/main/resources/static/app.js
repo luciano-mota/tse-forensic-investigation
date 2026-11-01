@@ -120,6 +120,7 @@ async function loadData() {
     }
     renderMetrics();
     renderSources();
+    await renderReferenceCheck();
     updateRegion();
     renderMap();
     await loadMunicipalities();
@@ -220,6 +221,30 @@ async function runComparison() {
     } finally {
         button.disabled = false;
         button.textContent = "Comparar turnos ↗";
+    }
+}
+
+async function renderReferenceCheck() {
+    const target = $("national-reference-check");
+    if (!target) return;
+    try {
+        const result = await getJson("/audits/national-reference");
+        const status = result.status;
+        let title = "COBERTURA INCOMPLETA";
+        let description = result.missingUfs.length + " unidades ainda sem dados completos; a comparação não pode ser interpretada como divergência.";
+        if (status === "CONFERE_COM_TOTAL_PUBLICADO") {
+            title = "TOTAIS CONFEREM";
+            description = "Os agregados importados coincidem com os totais nacionais divulgados pelo TSE em 26/10/2026. Isso não comprova integridade do software das urnas.";
+        } else if (status === "DIVERGENCIA_COM_TOTAL_PUBLICADO") {
+            title = "DIFERENÇA A INVESTIGAR";
+            description = "Com cobertura territorial completa, os valores importados diferem da referência publicada. Verifique escopo, fontes e transformações antes de atribuir causa.";
+        }
+        target.innerHTML = '<span class="reference-symbol">◎</span><div><strong>' + title +
+            '</strong><p>' + escapeHtml(description) + '</p></div><a href="' +
+            escapeHtml(result.referenceUrl) +
+            '" rel="noopener noreferrer" target="_blank">REFERÊNCIA TSE ↗</a>';
+    } catch (error) {
+        target.textContent = "Verificação da referência oficial não disponível no momento.";
     }
 }
 

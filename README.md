@@ -11,6 +11,7 @@ Plataforma **independente e não oficial** para exploração e conferência repr
 - API REST `/api/v1`, camada de serviço/domínio/repositório, Spring Boot 3 + Java 21.
 - Ingestão local de CSV/ZIP oficial de votação por seção, com leitura em streaming, agregação por município, transações, deduplicação e SHA-256 registrado.
 - PostgreSQL + Flyway, execução Docker compatível com Render e build automático no GitHub Actions.
+- Conferência dos agregados com o total nacional publicado pelo TSE em 26/10/2026, **somente quando houver cobertura territorial completa**.
 - Nenhum resultado fictício e nenhuma classificação automática de fraude.
 
 ## Limites atuais — leia antes de publicar resultados
@@ -68,6 +69,7 @@ O processo lê somente o arquivo indicado ou os CSV/ZIP de um diretório local, 
 | GET | `/api/v1/elections/states?round=1` | Resultados por UF |
 | GET | `/api/v1/elections/states/MA/municipalities?round=2` | Resultados municipais |
 | GET | `/api/v1/elections/comparison?uf=MA&minVotes=500&thresholdPp=15` | Variações descritivas por município |
+| GET | `/api/v1/audits/national-reference` | Compara o segundo turno com a referência nacional TSE de 26/10; exige cobertura integral das 27 UFs + exterior |
 | GET | `/api/v1/sources` | Proveniência SHA-256 das importações |
 | GET | `/api/v1/methodology` | Limitações declaradas |
 | GET | `/actuator/health` | Healthcheck |
