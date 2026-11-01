@@ -731,3 +731,53 @@ function startAutomaticSourceChecks() {
     });
 }
 Promise.resolve(initialDataLoad).catch(()=>{}).finally(startAutomaticSourceChecks);
+
+
+
+/**
+ * A sourced, deterministic reading. Not a model-generated accusation or inference.
+ * Scope changes (country/UF/municipality) rerun the exact same published formulas.
+ */
+function renderElectionReading() {
+    const content=$("analysis-content");
+    const status=$("analysis-status");
+    if(!content||!status)return;
+    const reading=buildElectionReading(state.liveAtlas,{
+        uf:state.uf,municipalityCode:state.municipalityCode,
+        name:state.municipalityName||(state.uf?UF_NAMES[state.uf]:"Brasil")
+    });
+    if(!reading || reading.status==="INSUFFICIENT") {
+        status.textContent=reading?.headline||"Aguardando importação e validação dos arquivos oficiais.";
+        content.textContent=reading?.explanation||"O sistema não publica conclusões sem dados suficientes nos dois turnos.";
+        return;
+    }
+    status.textContent="LEITURA DESCRITIVA · "+reading.name.toUpperCase()+
+        " · ARQUIVOS TSE VALIDADOS POR SHA-256";
+    const rows=reading.calculations.map(calc=>'<tr><td><strong>'+escapeHtml(calc.label)+
+        '</strong><span class="analysis-formula">'+escapeHtml(calc.formula)+'</span></td>'+
+        '<td class="analysis-expression">'+escapeHtml(calc.expression)+'</td>'+
+        '<td class="analysis-result">'+escapeHtml(calc.result)+'</td></tr>').join("");
+    const bullets=reading.interpretations.map(item=>'<li>'+escapeHtml(item)+'</li>').join("");
+    const checks=reading.checks.map(check=>'<div class="evidence-observation evidence-'+
+        escapeHtml(check.kind)+'"><strong>'+escapeHtml(check.label)+'</strong><p>'+
+        escapeHtml(check.detail)+'</p></div>').join("");
+    const sources=reading.sources.map(src=>'<li><a href="'+escapeHtml(src.url)+
+        '" target="_blank" rel="noopener noreferrer">'+escapeHtml(src.filename)+'</a>'+
+        '<code>SHA-256 '+escapeHtml(src.sha256)+'</code></li>').join("");
+    content.innerHTML='<div class="analysis-story"><h3>'+escapeHtml(reading.headline)+'</h3>'+
+        '<p class="analysis-lead">'+escapeHtml(reading.lead)+'</p>'+
+        '<ul class="analysis-findings">'+bullets+'</ul></div>'+
+        '<div class="analysis-formula-section"><h4>Como os números foram calculados</h4>'+
+        '<div class="table-scroll"><table><thead><tr><th>INDICADOR / FÓRMULA</th>'+
+        '<th>SUBSTITUIÇÃO</th><th>RESULTADO</th></tr></thead><tbody>'+rows+
+        '</tbody></table></div></div>'+
+        '<div class="analysis-integrity"><h4>Checagens de consistência e limites</h4>'+
+        checks+'<p class="analysis-caution">'+escapeHtml(reading.caveat)+'</p>'+
+        (reading.referenceNote?'<p>'+escapeHtml(reading.referenceNote)+'</p>':'')+'</div>'+
+        '<details class="analysis-method"><summary>Método reproduzível e origem dos dados</summary>'+
+        '<p>'+escapeHtml(reading.methodology)+'</p>'+
+        '<p>Snapshot observado em '+escapeHtml(reading.observedAt||"data não informada")+
+        '; versão derivada <code>'+escapeHtml(reading.version||"—")+'</code>.</p>'+
+        '<ul>'+sources+'</ul><p><a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026" '+
+        'target="_blank" rel="noopener noreferrer">Portal de Dados Abertos do TSE ↗</a></p></details>';
+}
