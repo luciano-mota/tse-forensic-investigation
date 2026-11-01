@@ -44,6 +44,18 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   let projection=null,svg=null,land=null,camera={k:1,x:0,y:0};
   let suppressClickUntil=0,dragged=false,gesture=null;
   let focusSequence=0;
+  const media=window.matchMedia("(prefers-reduced-motion: reduce)");
+  function animateCamera(next){
+    if(media.matches||!svg){camera=next;cameraApply();return;}
+    const from={...camera},start=performance.now(),duration=340;
+    function frame(now){
+      if(!svg||focusSequence!==sequence)return;
+      const t=Math.min(1,(now-start)/duration),e=1-Math.pow(1-t,3);
+      camera={k:from.k+(next.k-from.k)*e,x:from.x+(next.x-from.x)*e,y:from.y+(next.y-from.y)*e};cameraApply();
+      if(t<1)requestAnimationFrame(frame);
+    }
+    const sequence=focusSequence;requestAnimationFrame(frame);
+  }
   const pointers=new Map();
   function project(p){
     const [x,y]=mercator(p);
@@ -63,8 +75,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   function fit(features,padding=35,maxZoom=60){
     const b=bounding(features,project);if(!b)return;
     const k=clamp(Math.min((W-2*padding)/Math.max(1,b[2]-b[0]),(H-2*padding)/Math.max(1,b[3]-b[1])),1,maxZoom);
-    camera={k,x:W/2-k*(b[0]+b[2])/2,y:H/2-k*(b[1]+b[3])/2};
-    cameraApply();
+    animateCamera({k,x:W/2-k*(b[0]+b[2])/2,y:H/2-k*(b[1]+b[3])/2});
   }
   function zoom(factor,x=W/2,y=H/2){
     const k=clamp(camera.k*factor,1,65),ratio=k/camera.k;
@@ -178,13 +189,14 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
       land.append(shape);
     }
     svg.append(land);target.replaceChildren(svg);bindControls();cameraApply();
+    target.classList.add("map-ready");
   }
   async function boot(){
     const r=await fetch("/geo/estados.geojson",{cache:"force-cache"});
     if(!r.ok)throw new Error("Mapa nacional HTTP "+r.status);
     const d=await r.json();
     if(!valid(d)||d.features.length!==27)throw new Error("Mapa nacional incompleto");
-    country=d;configureProjection(d);draw();fit(country.features,24,2);
+    country=d;configureProjection(d);draw();fit(country.features,12,2);
   }
   async function focusState(next){
     const sequence=++focusSequence;
@@ -210,7 +222,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     }
     if(sequence!==focusSequence)return;
     draw();
-    if(!uf)fit(country.features,24,2);
+    if(!uf)fit(country.features,12,2);
     else {
       const bound=country.features.find(f=>stateCode(f)===uf);
       if(bound)fit([bound],36,45);
