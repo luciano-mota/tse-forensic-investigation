@@ -1,3 +1,5 @@
+import { createAtlasMap } from "./atlas-map.js";
+import { buildElectionReading } from "./analysis.js";
 const API = "/api/v1";
 const UF_NAMES = {
     AC: "Acre", AL: "Alagoas", AP: "Amapá", AM: "Amazonas", BA: "Bahia",
@@ -15,6 +17,7 @@ const IBGE_CODES = {
     41: "PR", 42: "SC", 43: "RS", 50: "MS", 51: "MT", 52: "GO", 53: "DF"
 };
 const LABELS = { 13: "Lula (PT)", 22: "Flávio Bolsonaro (PL)" };
+const CANDIDATE_PRESENTATION = Object.freeze({13:{party:"PT",color:"#df4557",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/09.07.2026%20-%20Presidente%20Lula.jpg?width=240"},22:{party:"PL",color:"#368dd7",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/2026%20FLAVIO%20BOLSONARO%20CANDIDATO%20PRESIDENTE%20TSE%20%28280002551544%29%20%28cropped%29.jpg?width=240"}});
 const numberFormat = new Intl.NumberFormat("pt-BR");
 const percentageFormat = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 const state = {
@@ -28,6 +31,7 @@ const state = {
     sources: [],
     mapFeatures: null,
     geoModule: null,
+    mapController: null,
     error: null,
     hasData: false,
     archive: null,
@@ -46,9 +50,9 @@ const pct = value => percentageFormat.format(Number(value ?? 0)) + "%";
 const winner = region => region?.candidates?.[0] ?? null;
 const label = candidate => LABELS[candidate.number] ||
     (candidate.name?.startsWith("Votável ") ? "Votável " + candidate.number : candidate.name);
-const selectedRegion = () => state.uf
-    ? state.states.find(region => region.code === state.uf)
-    : state.overview;
+const selectedRegion = () => state.municipalityCode
+    ? (state.municipalities.find(r => r.code === state.municipalityCode) || null)
+    : state.uf ? state.states.find(r => r.code === state.uf) : state.overview;
 
 async function getJson(path) {
     const response = await fetch(API + path, { headers: { Accept: "application/json" } });
@@ -76,15 +80,7 @@ function setup() {
             await loadData();
         });
     });
-    select.addEventListener("change", async event => {
-        state.uf = event.target.value;
-        state.municipalityCode = null;
-        state.municipalityName = null;
-        updateRegion();
-        renderMap();
-        await loadMunicipalities();
-    await loadForensicPanels();
-    });
+    select.addEventListener("change", event => selectUF(event.target.value));
     $("refresh").addEventListener("click", loadData);
     $("archive-search").addEventListener("input", renderArchive);
     $("archive-dataset").addEventListener("change", renderArchive);
@@ -95,14 +91,15 @@ function setup() {
         if (!row) return;
         const item = state.municipalities.find(city => city.code === row.dataset.municipality);
         if (!item) return;
-        state.municipalityCode = item.code;
-        state.municipalityName = item.name;
-        loadForensicPanels();
-        $("turnout").scrollIntoView({ behavior:"smooth", block:"start" });
+        selectMunicipality({uf:state.uf,code:item.code,name:item.name}, true);
+        $("map").scrollIntoView({ behavior:"smooth", block:"start" });
     });
     $("clear-city").addEventListener("click", () => {
         state.municipalityCode = null;
         state.municipalityName = null;
+        updateRegion();
+        updateMapTrail();
+        state.mapController?.focusState(state.uf).catch(()=>{});
         loadForensicPanels();
     });
     $("run-comparison").addEventListener("click", runComparison);
@@ -162,6 +159,7 @@ async function loadData() {
     await loadMunicipalities();
     await loadForensicPanels();
     await loadOfficialAtlas();
+    renderElectionReading();
 }
 
 function renderMetrics() {
@@ -174,25 +172,33 @@ function renderMetrics() {
 
 function updateRegion() {
     const region = selectedRegion();
-    $("region-name").textContent = state.uf ? UF_NAMES[state.uf] : "Brasil";
-    $("region-kicker").textContent = state.uf ? "UNIDADE FEDERATIVA / " + state.uf : "RESULTADO NACIONAL";
+    $("region-name").textContent = state.municipalityName || (state.uf ? UF_NAMES[state.uf] : "Brasil");
+    $("region-kicker").textContent = state.municipalityName ? "MUNICÍPIO / "+state.uf : state.uf ? "UNIDADE FEDERATIVA / "+state.uf : "RESULTADO NACIONAL";
     $("result-votes").textContent = region?.validVotes ? votes(region.validVotes) : "—";
     if (!region?.validVotes) {
         $("candidate-results").innerHTML = '<div class="empty-result">Nenhum resultado disponível para este recorte e turno.</div>';
         return;
     }
     $("candidate-results").innerHTML = region.candidates.map(candidate => {
-        const color = candidate.number === 13 ? "var(--violet)" :
-            candidate.number === 22 ? "var(--accent)" : "#a2b6c8";
-        const safePct = Math.min(100, Math.max(0, Number(candidate.percentage)));
-        return '<div class="candidate">' +
-            '<div class="candidate-heading"><div class="candidate-name">' +
-            '<span class="candidate-number">' + candidate.number + '</span>' +
-            escapeHtml(label(candidate)) + '</div>' +
-            '<span class="candidate-percentage">' + pct(candidate.percentage) + '</span></div>' +
-            '<div class="candidate-votes">' + votes(candidate.votes) + ' votos válidos</div>' +
-            '<div class="bar-track"><div class="bar-fill" style="width:' + safePct + '%;background:' + color + '"></div></div></div>';
+        const identity = CANDIDATE_PRESENTATION[candidate.number];
+        const color = identity?.color || "#8da1b4";
+        const percent = Math.min(100,Math.max(0,Number(candidate.percentage)));
+        const portrait = identity
+            ? '<span class="candidate-photo-frame" style="--party-color:'+color+'"><img class="candidate-photo" src="'+
+              escapeHtml(identity.picture)+'" alt="Foto de '+escapeHtml(label(candidate))+
+              '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'"/>'+
+              '<span class="candidate-photo-fallback" aria-hidden="true">'+candidate.number+'</span></span>'
+            : '<span class="candidate-number">'+Number(candidate.number)+'</span>';
+        return '<div class="candidate" style="--party-color:'+color+'">'+
+            '<div class="candidate-heading"><div class="candidate-name">'+portrait+
+            '<span class="candidate-title"><strong>'+escapeHtml(label(candidate))+'</strong>'+
+            (identity?'<small>'+identity.party+' · '+candidate.number+'</small>':'')+'</span></div>'+
+            '<span class="candidate-percentage">'+pct(candidate.percentage)+'</span></div>'+
+            '<div class="candidate-votes">'+votes(candidate.votes)+' votos válidos</div>'+
+            '<div class="bar-track"><div class="bar-fill" style="width:'+percent+
+            '%;background:'+color+'"></div></div></div>';
     }).join("");
+    renderElectionReading();
 }
 
 async function loadMunicipalities() {
@@ -200,6 +206,7 @@ async function loadMunicipalities() {
     if (state.liveAtlas && !state.hasDbData && state.uf) {
         state.municipalities = liveMunicipalities(state.round,state.uf);
         renderMunicipalities();
+        state.mapController?.refresh();
         return;
     }
     if (!state.uf || state.uf === "ZZ") {
@@ -210,6 +217,7 @@ async function loadMunicipalities() {
         state.municipalities = await getJson("/elections/states/" + state.uf +
             "/municipalities?round=" + state.round);
         renderMunicipalities();
+        state.mapController?.refresh();
     } catch (error) {
         $("city-rows").innerHTML = '<tr><td colspan="4" class="empty-table">Falha ao carregar os municípios.</td></tr>';
     }
@@ -305,96 +313,64 @@ function renderSources() {
         escapeHtml(source.importedAt) + '</small></div>').join("");
 }
 
+// All map geometries are self-hosted in /geo: no runtime IBGE API dependency.
 async function loadGeometry() {
+    state.mapController = createAtlasMap({
+        onState: uf => selectUF(uf),
+        onCity: city => selectMunicipality(city,false),
+        onReset: () => selectUF(""),
+        getCities: () => state.municipalities,
+        getStates: () => state.states,
+        tooltip: $("map-tooltip")
+    });
+    $("map-zoom-in").addEventListener("click",()=>state.mapController.zoom(1.65));
+    $("map-zoom-out").addEventListener("click",()=>state.mapController.zoom(1/1.65));
+    $("map-reset").addEventListener("click",()=>selectUF(""));
     try {
-        const [module, response] = await Promise.all([
-            import("https://cdn.jsdelivr.net/npm/d3-geo@3/+esm"),
-            fetch("https://servicodados.ibge.gov.br/api/v3/malhas/estados?formato=application/vnd.geo%2Bjson&qualidade=minima")
-        ]);
-        if (!response.ok) throw new Error("IBGE " + response.status);
-        const geo = await response.json();
-        if (geo.type !== "FeatureCollection" || !Array.isArray(geo.features)) {
-            throw new Error("Geometria territorial inválida.");
-        }
-        state.geoModule = module;
-        state.mapFeatures = geo;
-        renderMap();
+        await state.mapController.boot();
+        $("state-fallback").hidden = true;
+        if (state.uf) await state.mapController.focusState(state.uf);
+        updateMapTrail();
     } catch (error) {
-        $("map-canvas").innerHTML = '<p class="map-loading">Geometria do IBGE indisponível. Selecione uma UF abaixo.</p>';
-        $("state-fallback").hidden = false;
-        $("state-fallback").innerHTML = Object.keys(UF_NAMES).filter(uf => uf !== "ZZ")
-            .map(uf => '<button data-uf="' + uf + '" type="button">' + uf + '</button>').join("");
-        $("state-fallback").querySelectorAll("[data-uf]").forEach(button =>
-            button.addEventListener("click", () => selectUF(button.dataset.uf)));
-    }
-}
-
-function geometryUF(feature) {
-    const properties = feature.properties || {};
-    const code = String(feature.id || properties.codarea || properties.CD_UF || "").slice(0, 2);
-    return (properties.sigla || properties.SIGLA || IBGE_CODES[code] || "").toUpperCase();
-}
-
-function selectUF(uf) {
-    state.uf = uf;
-    state.municipalityCode = null;
-    state.municipalityName = null;
-    $("uf-select").value = uf;
-    updateRegion();
-    renderMap();
-    loadMunicipalities();
-    loadForensicPanels();
-}
-
-function renderMap() {
-    if (!state.mapFeatures || !state.geoModule) return;
-    const { geoPath, geoMercator } = state.geoModule;
-    const projection = geoMercator().fitExtent([[24, 22], [715, 460]], state.mapFeatures);
-    const path = geoPath(projection);
-    const ns = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(ns, "svg");
-    svg.setAttribute("viewBox", "0 0 740 485");
-    svg.setAttribute("role", "img");
-    svg.setAttribute("aria-label", "Mapa interativo dos estados brasileiros com resultados do turno selecionado");
-    for (const feature of state.mapFeatures.features) {
-        const uf = geometryUF(feature);
-        if (!UF_NAMES[uf]) continue;
-        const region = state.states.find(item => item.code === uf);
-        const top = winner(region);
-        const fill = !top ? "#263d50" : top.number === 13 ? "#9d82db" :
-            top.number === 22 ? "#5cbfc5" : "#617a90";
-        const shape = document.createElementNS(ns, "path");
-        shape.setAttribute("d", path(feature) || "");
-        shape.setAttribute("fill", fill);
-        shape.setAttribute("class", "map-path");
-        shape.setAttribute("tabindex", "0");
-        shape.setAttribute("aria-label", (UF_NAMES[uf] || uf) + (region ? ", " + votes(region.validVotes) + " votos válidos" : ", sem dados"));
-        if (uf === state.uf) {
-            shape.setAttribute("stroke", "#fff");
-            shape.setAttribute("stroke-width", "2.4");
-        }
-        const showTooltip = () => {
-            const tooltip = $("map-tooltip");
-            tooltip.hidden = false;
-            tooltip.innerHTML = '<strong>' + escapeHtml(UF_NAMES[uf]) + '</strong><small>' +
-                (top ? escapeHtml(label(top)) + ' · ' + pct(top.percentage) : "Sem dados importados") +
-                '</small>';
-        };
-        shape.addEventListener("mouseenter", showTooltip);
-        shape.addEventListener("focus", showTooltip);
-        shape.addEventListener("mouseleave", () => $("map-tooltip").hidden = true);
-        shape.addEventListener("blur", () => $("map-tooltip").hidden = true);
-        shape.addEventListener("click", () => selectUF(uf));
-        shape.addEventListener("keydown", event => {
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                selectUF(uf);
-            }
+        $("map-canvas").textContent = "Não foi possível abrir a malha cartográfica local. Use o seletor de UF.";
+        const fallback = $("state-fallback");
+        fallback.hidden = false;
+        fallback.replaceChildren();
+        Object.keys(UF_NAMES).filter(uf=>uf!=="ZZ").forEach(uf=>{
+            const button=document.createElement("button");
+            button.type="button";button.textContent=uf;
+            button.addEventListener("click",()=>selectUF(uf));
+            fallback.append(button);
         });
-        svg.appendChild(shape);
     }
-    $("map-canvas").replaceChildren(svg);
 }
+function updateMapTrail(){
+    const trail=$("map-trail");
+    if(!trail)return;
+    trail.textContent="BRASIL"+(state.uf?"  /  "+state.uf:"")+
+        (state.municipalityName?"  /  "+state.municipalityName.toUpperCase():"");
+    $("map-reset").hidden=!state.uf;
+}
+async function selectUF(uf) {
+    const safe=UF_NAMES[uf]?uf:"";
+    state.uf=safe;state.municipalityCode=null;state.municipalityName=null;
+    $("uf-select").value=safe;
+    updateRegion();updateMapTrail();
+    await loadMunicipalities();
+    try {await state.mapController?.focusState(safe);}
+    catch(error){$("data-warning").textContent="A malha municipal deste estado não pôde ser carregada; os dados eleitorais permanecem acessíveis na listagem.";$("data-warning").hidden=false;}
+    await loadForensicPanels();
+    if(state.liveAtlas&&!state.hasDbData)displayLiveTurnout();
+}
+function selectMunicipality(city,moveMap) {
+    state.uf=city.uf;state.municipalityCode=city.code;
+    state.municipalityName=city.name;
+    updateRegion();updateMapTrail();
+    if(moveMap)state.mapController?.focusCityByCode(city.code,city.name);
+    loadForensicPanels();
+    if(state.liveAtlas&&!state.hasDbData)displayLiveTurnout();
+}
+function renderMap(){state.mapController?.refresh();}
 
 setup();
 const initialDataLoad = loadData();
@@ -683,8 +659,9 @@ async function loadOfficialAtlas() {
         $("metric-sources").textContent=String(state.sources.length);
         renderSources();
         updateRegion();
-        renderMap();
         await loadMunicipalities();
+        renderMap();
+        updateRegion();
         displayLiveTurnout();
     }catch(error){
         $("data-warning").textContent="O espelho de totais oficiais está indisponível; nenhum resultado foi inferido.";
