@@ -1,6 +1,6 @@
 /* Self-hosted CC0 IBGE-derived map. No third-party map API or runtime library. */
 const W=740,H=485,NS="http://www.w3.org/2000/svg";
-const COLORS={13:"#df4557",22:"#368dd7",none:"#294450",other:"#8ba4b5"};
+const COLORS={13:"#df4557",22:"#368dd7",70:"#178a80",14:"#43a5b5",55:"#5f9d54",30:"#e78a36",80:"#9d2935",16:"#b53948",27:"#a5b468",21:"#b12d3b",35:"#618a95",29:"#9b3944",none:"#294450",other:"#8ba4b5"};
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 export const normalizePlace=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim().replace(/\s+/g," ");
 const stateCode=f=>String(f.properties?.sigla||"").toUpperCase();
@@ -42,7 +42,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   const target=document.getElementById("map-canvas"),cache=new Map();
   let country=null,uf="",selectedCode=null,selectedFeature=null;
   let projection=null,svg=null,land=null,camera={k:1,x:0,y:0};
-  let suppressClick=false,dragged=false,gesture=null;
+  let suppressClickUntil=0,dragged=false,gesture=null;
   const pointers=new Map();
   function project(p){
     const [x,y]=mercator(p);
@@ -104,7 +104,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     });
     const done=e=>{
       pointers.delete(e.pointerId);
-      if(dragged){suppressClick=true;queueMicrotask(()=>{suppressClick=false;});}
+      if(dragged)suppressClickUntil=Date.now()+280;
       if(pointers.size<2)gesture=null;
     };
     svg.addEventListener("pointerup",done);
@@ -154,7 +154,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
       shape.addEventListener("focus",()=>showFeature(f,isCity,region));
       shape.addEventListener("blur",()=>{tooltip.hidden=true;});
       const activate=()=>{
-        if(suppressClick)return;
+        if(Date.now()<suppressClickUntil)return;
         if(!isCity){onState(id);return;}
         if(!region){showFeature(f,true,null);return;}
         selectedCode=region.code;selectedFeature=f;
