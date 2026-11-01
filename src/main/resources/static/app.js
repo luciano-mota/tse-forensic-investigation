@@ -117,6 +117,27 @@ function setup() {
     });
     select.addEventListener("change", event => selectUF(event.target.value));
     $("refresh").addEventListener("click", loadData);
+    $("ai-explain").addEventListener("click", async () => {
+      const button=$("ai-explain"),out=$("ai-explanation");
+      const reading=buildElectionReading(state.liveAtlas,{
+        uf:state.uf,municipalityCode:state.municipalityCode,
+        name:state.municipalityName||(state.uf?UF_NAMES[state.uf]:"Brasil")
+      });
+      if(!reading||reading.status==="INSUFFICIENT"||!state.liveAtlas){
+        out.textContent="Dados oficiais insuficientes para uma explicação assistida.";return;
+      }
+      const payload={uf:state.uf||"",municipalityCode:state.municipalityCode?String(state.municipalityCode):""};
+      button.disabled=true;out.textContent="Consultando modelo externo...";
+      try{
+        const response=await fetch("/api/v1/ai/explain",{
+          method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)
+        });
+        const result=await response.json();
+        if(!response.ok)throw new Error(result.error||"Serviço de IA indisponível");
+        out.textContent=result.explanation+"\n\nSíntese automatizada; confira fontes e cálculos originais.";
+      }catch(error){out.textContent="Não foi possível gerar a síntese: "+error.message;}
+      finally{button.disabled=false;}
+    });
     $("archive-search").addEventListener("input", renderArchive);
     $("archive-dataset").addEventListener("change", renderArchive);
     $("archive-refresh").addEventListener("click", loadArchive);
