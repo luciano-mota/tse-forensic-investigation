@@ -7,6 +7,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 HTML = (ROOT / "src/main/resources/static/index.html").read_text(encoding="utf-8")
 CSS = (ROOT / "src/main/resources/static/experience.css").read_text(encoding="utf-8")
+ICON = (ROOT / "src/main/resources/static/favicon.svg").read_text(encoding="utf-8")
+WORKFLOW = (ROOT / ".github/workflows/tse-catalog-sync.yml").read_text(encoding="utf-8")
 APP = (ROOT / "src/main/resources/static/app.js").read_text(encoding="utf-8")
 
 class HTMLInspector(HTMLParser):
@@ -49,6 +51,18 @@ class EditorialExperienceTest(unittest.TestCase):
             self.assertIn(target, self.html.ids)
         self.assertIn('aria-label="Navegar pelas áreas da investigação"', HTML)
         self.assertIn("prefers-reduced-motion", CSS)
+
+    def test_favicon_and_automatic_updates(self):
+        self.assertIn('href="/favicon.svg?v=2"', HTML)
+        self.assertIn('aria-label="TSE Forensic"', ICON)
+        self.assertIn('#96e8df', ICON)
+        self.assertIn('id="live-last-check"', HTML)
+        self.assertIn('id="live-snapshot-time"', HTML)
+        self.assertIn('id="live-update-status"', HTML)
+        self.assertIn('setInterval(pollOfficialStatus,120000)', APP)
+        self.assertIn('source.version!==state.liveAtlas?.derived_version', APP)
+        self.assertIn('cron: "17 * * * *"', WORKFLOW)
+        self.assertNotIn('6 horas UTC por GitHub Actions', HTML)
 
     def test_features_are_in_reading_order_not_numbered_cards(self):
         position = {ident: HTML.index('id="' + ident + '"')
