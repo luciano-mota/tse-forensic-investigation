@@ -1,5 +1,5 @@
 /* Self-hosted CC0 IBGE-derived map. No third-party map API or runtime library. */
-const W=920,H=610,NS="http://www.w3.org/2000/svg";
+const W=920,H=700,NS="http://www.w3.org/2000/svg";
 const COLORS={13:"#df4557",22:"#368dd7",70:"#178a80",14:"#43a5b5",55:"#5f9d54",30:"#e78a36",80:"#9d2935",16:"#b53948",27:"#a5b468",21:"#b12d3b",35:"#618a95",29:"#9b3944",none:"#294450",other:"#8ba4b5"};
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 export const normalizePlace=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim().replace(/\s+/g," ");
@@ -52,7 +52,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   function configureProjection(data){
     const b=bounding(data.features,mercator);
     if(!b)throw new Error("Malha nacional sem coordenadas");
-    const u=Math.min((W-65)/(b[2]-b[0]),(H-55)/(b[3]-b[1]));
+    const u=Math.min((W-25)/(b[2]-b[0]),(H-25)/(b[3]-b[1]));
     projection={a:b[0],b:b[1],u,dx:(W-(b[2]-b[0])*u)/2,dy:(H-(b[3]-b[1])*u)/2};
   }
   function cameraApply(){
@@ -190,8 +190,10 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     const sequence=++focusSequence;
     uf=next||"";selectedCode=null;selectedFeature=null;tooltip.hidden=true;
     if(!country)return;
+    // Zoom to the selected UF immediately, even while municipality geometry loads.
+    if(uf){const outline=country.features.find(f=>stateCode(f)===uf);if(outline)fit([outline],28,45);}
     if(uf&&!cache.has(uf)){
-      target.textContent="Carregando limites de "+uf+"...";
+      target.setAttribute("aria-busy","true");
       try{
         const r=await fetch("/geo/"+uf+".geojson",{cache:"force-cache"});
         if(!r.ok)throw new Error("HTTP "+r.status);
@@ -199,7 +201,12 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
         if(sequence!==focusSequence)return;
         if(!valid(data))throw new Error("Dados cartográficos incompletos");
         cache.set(uf,data);
-      }catch(e){uf="";draw();fit(country.features);throw e;}
+      }catch(e){
+        // Preserve the state focus even if its detailed municipal mesh is absent.
+        draw();const outline=country.features.find(f=>stateCode(f)===uf);
+        if(outline)fit([outline],28,45);
+        throw e;
+      }finally{target.removeAttribute("aria-busy");}
     }
     if(sequence!==focusSequence)return;
     draw();
