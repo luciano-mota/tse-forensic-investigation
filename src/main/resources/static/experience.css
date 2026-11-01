@@ -642,3 +642,5 @@ footer span{color:#8bbab7}
   .drift-index .nav-symbol{font-size:18px}
   .signal-bar{padding-left:12px;padding-right:12px}
 }
+
+@media(max-width:700px){.drift-index .drift-rail{display:none!important}}
