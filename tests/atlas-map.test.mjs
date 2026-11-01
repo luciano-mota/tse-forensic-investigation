@@ -50,8 +50,13 @@ function mock(){
  return {map,canvas,tooltip,log,zoom,country,cities};
 }
 function shapes(canvas,type){
- const svg=canvas.children[0],land=svg?.children?.find(c=>c.tagName==="g");
- return land?.children?.filter(x=>x.attributes.class.includes(type))||[];
+ const found=[];
+ const walk=node=>{
+   if(String(node?.attributes?.class||"").split(/\\s+/).includes(type))found.push(node);
+   for(const child of node?.children||[])walk(child);
+ };
+ walk(canvas);
+ return found;
 }
 test("geographic normalization matches accented TSE municipality names",()=>{
  assert.equal(normalizePlace("São Luís - MA"),"SAO LUIS MA");
