@@ -11,6 +11,8 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -30,6 +32,8 @@ public class LiveElectionMirrorService {
             .connectTimeout(Duration.ofSeconds(8)).build();
     private JsonNode cached;
     private Instant until = Instant.EPOCH;
+    private JsonNode cachedMonitor;
+    private Instant monitorUntil = Instant.EPOCH;
 
     public LiveElectionMirrorService(ObjectMapper mapper) {
         this.mapper = mapper;
@@ -59,7 +63,7 @@ public class LiveElectionMirrorService {
                 throw new IllegalStateException("Derived snapshot version does not match index");
             }
             cached = atlas;
-            until = Instant.now().plus(Duration.ofMinutes(12));
+            until = Instant.now().plus(Duration.ofMinutes(2));
             return cached;
         } catch (Exception ex) {
             // Never convert transport failure into data and never show partial aggregate.
@@ -68,6 +72,57 @@ public class LiveElectionMirrorService {
             until = Instant.now().plus(Duration.ofMinutes(2));
             return cached;
         }
+    }
+
+    /**
+     * Lightweight update check. This returns the last official source check time,
+     * not a claim that election data are being published in real time.
+     * The extraction runner records last_attempt.json on each hourly pass.
+     */
+    public synchronized JsonNode monitor() {
+        if (cachedMonitor != null && Instant.now().isBefore(monitorUntil)) {
+            return cachedMonitor;
+        }
+        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+        result.put("source", "TSE_OFFICIAL_CKAN_TEMPORARY_ZIP");
+        result.put("cadence", "HOURLY_BEST_EFFORT");
+        result.put("disclaimer", "Os dados representam a última publicação oficial processada; não há transmissão de votos em tempo real.");
+        result.put("checkedAt", null);
+        result.put("snapshotAt", null);
+        result.put("version", null);
+        result.put("status", "PENDING");
+        try {
+            JsonNode last = fetch(BASE + "archive/derived/last_attempt.json", 64_000);
+            JsonNode pointer = fetch(BASE + "archive/derived/current.json", 64_000);
+            String version = pointer == null ? "" : pointer.path("derived_version").asText("");
+            if (version.matches("[a-f0-9]{64}")) {
+                result.put("version", version);
+                result.put("snapshotAt", pointer.path("observed_at").asText(null));
+            }
+            if (last != null) {
+                result.put("checkedAt", last.path("checked_at").asText(null));
+                String outcome = last.path("status").asText("");
+                result.put("lastAttempt", outcome);
+                if ("FAILED".equals(outcome)) {
+                    result.put("status", version.isBlank() ? "ERROR" : "DEGRADED");
+                    result.put("warning", "A última coleta falhou; exibindo somente a última versão válida.");
+                } else if (!version.isBlank()) {
+                    Instant check = Instant.parse(last.path("checked_at").asText());
+                    long hours = ChronoUnit.HOURS.between(check, Instant.now());
+                    result.put("status", hours >= 3 ? "STALE" : "OK");
+                    if (hours >= 3) result.put("warning", "Sem verificação recente; consulte o histórico de execução.");
+                }
+            } else if (!version.isBlank()) {
+                result.put("status", "STALE");
+                result.put("warning", "Sem registro acessível da última verificação.");
+            }
+        } catch (Exception error) {
+            result.put("status", "UNAVAILABLE");
+            result.put("warning", "O registro de atualização não pôde ser conferido.");
+        }
+        cachedMonitor = mapper.valueToTree(result);
+        monitorUntil = Instant.now().plus(Duration.ofSeconds(90));
+        return cachedMonitor;
     }
 
     private JsonNode fetch(String url, int limit) throws IOException, InterruptedException {
