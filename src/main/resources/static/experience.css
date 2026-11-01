@@ -449,3 +449,15 @@ footer span{color:#8bbab7}
  .analysis-story h3{font-size:29px}
  .analysis-formula-section th,.analysis-formula-section td{min-width:130px;font-size:11px}
  .analysis-formula-section td{white-space:normal}}
+
+
+/* Downloadable forensic report, styled as a primary editorial action. */
+.report-pdf-download{display:inline-flex;align-items:center;gap:17px;margin:0 0 22px;
+ padding:14px 21px;border:1px solid #91dad5;background:rgba(57,129,136,.12);
+ color:#aef0eb;font:700 11px var(--mono);letter-spacing:.85px;
+ transition:background .2s,border-color .2s;max-width:100%}
+.report-pdf-download:hover{background:rgba(96,200,193,.2);border-color:#c7fff3;color:#efffff}
+.report-pdf-download>span:first-child{font:500 31px var(--display);line-height:1}
+.report-pdf-download small{display:block;color:#83aeb5;font:9px/1.75 var(--mono);letter-spacing:.2px;margin-top:3px}
+.report-pdf-download[hidden]{display:none}
+@media(max-width:650px){.report-pdf-download{width:100%;justify-content:center}}
