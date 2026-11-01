@@ -502,3 +502,41 @@ footer span{color:#8bbab7}
 
 /* Increased map workspace on large displays; preserve mobile responsiveness. */
 @media (min-width:1200px){.map-panel{padding-inline:14px}.map-canvas{height:690px}.map-path{stroke-width:.55}}
+
+/* Mobile layout audit: safe-area, map visibility, accessible controls and table scroll. */
+@media (max-width:650px) {
+ html,body{max-width:100%;overflow-x:clip}
+ .editorial{padding-left:clamp(12px,4vw,20px);padding-right:clamp(12px,4vw,20px)}
+ .hero{padding:34px 0 32px}
+ .hero h1{font-size:clamp(39px,10.8vw,61px);line-height:1.06;overflow-wrap:break-word}
+ .hero-controls{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px}
+ .hero-controls .segmented{grid-column:1/-1;width:100%;display:grid;grid-template-columns:1fr 1fr}
+ .hero-controls .segmented button{padding:14px 8px}
+ #uf-select{width:100%;min-width:0}
+ .source-signal{gap:12px}
+ .atlas-stage{display:block;min-width:0}
+ .atlas-stage .map-panel{padding:18px 8px 24px}
+ .map-area{width:100%;min-width:0}
+ .map-canvas{height:clamp(380px,115vw,520px);min-height:0}
+ .map-canvas svg{width:100%;height:100%;max-width:100%;overflow:hidden}
+ .map-navigation{top:40px;right:4px}
+ .map-navigation button{min-width:40px;min-height:40px}
+ .map-navigation output{min-width:34px;margin:0 3px}
+ .map-bottom{display:flex;flex-wrap:wrap;gap:9px}
+ .map-tooltip{max-width:min(245px,80vw)}
+ .atlas-stage .results-panel{padding:24px 12px}
+ .result-region h3{overflow-wrap:anywhere}
+ .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .metric strong{font-size:clamp(23px,7vw,31px);overflow-wrap:anywhere}
+ .table-scroll{max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+ .table-scroll table{min-width:510px}
+ #city-search{font-size:16px;min-width:0}
+ .comparison-controls{flex-wrap:wrap}
+ .analysis-main{min-width:0}
+ .analysis-expression,.analysis-formula,.analysis-result{white-space:normal;overflow-wrap:anywhere}
+ .analysis-method code{overflow-wrap:anywhere;word-break:break-word}
+ .drift-index{left:0;right:0;bottom:0;width:100%;padding:6px max(7px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(7px,env(safe-area-inset-left));border-radius:0}
+ .drift-index .nav-item{padding:6px 2px;font-size:8px}
+ .report-pdf-download{white-space:normal;overflow-wrap:anywhere}
+}
+@media(max-width:380px){.header-source{font-size:8px}.brand-lines strong{font-size:15px}.map-topline span:last-child{display:none}}
