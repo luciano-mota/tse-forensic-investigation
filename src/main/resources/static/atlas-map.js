@@ -44,6 +44,8 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   let projection=null,svg=null,land=null,camera={k:1,x:0,y:0};
   let suppressClickUntil=0,dragged=false,gesture=null;
   let focusSequence=0;
+  const reducedMotion=window.matchMedia("(prefers-reduced-motion: reduce)");
+  let cameraAnimation=0;
   const pointers=new Map();
   function project(p){
     const [x,y]=mercator(p);
@@ -63,8 +65,18 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   function fit(features,padding=35,maxZoom=60){
     const b=bounding(features,project);if(!b)return;
     const k=clamp(Math.min((W-2*padding)/Math.max(1,b[2]-b[0]),(H-2*padding)/Math.max(1,b[3]-b[1])),1,maxZoom);
-    camera={k,x:W/2-k*(b[0]+b[2])/2,y:H/2-k*(b[1]+b[3])/2};
-    cameraApply();
+    const next={k,x:W/2-k*(b[0]+b[2])/2,y:H/2-k*(b[1]+b[3])/2};
+    if(cameraAnimation)cancelAnimationFrame(cameraAnimation);
+    if(reducedMotion.matches||!target.classList.contains("map-ready")){camera=next;cameraApply();return;}
+    const from={...camera},started=performance.now(),sequence=focusSequence;
+    const frame=now=>{
+      if(sequence!==focusSequence)return;
+      const t=Math.min(1,(now-started)/300),v=1-Math.pow(1-t,3);
+      camera={k:from.k+(next.k-from.k)*v,x:from.x+(next.x-from.x)*v,y:from.y+(next.y-from.y)*v};
+      cameraApply();
+      if(t<1)cameraAnimation=requestAnimationFrame(frame);
+    };
+    cameraAnimation=requestAnimationFrame(frame);
   }
   function zoom(factor,x=W/2,y=H/2){
     const k=clamp(camera.k*factor,1,65),ratio=k/camera.k;
@@ -177,7 +189,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
       });
       land.append(shape);
     }
-    svg.append(land);target.replaceChildren(svg);bindControls();cameraApply();
+    svg.append(land);target.replaceChildren(svg);bindControls();cameraApply();target.classList.add("map-ready");
   }
   async function boot(){
     const r=await fetch("/geo/estados.geojson",{cache:"force-cache"});
@@ -192,6 +204,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     if(!country)return;
     // Zoom to the selected UF immediately, even while municipality geometry loads.
     if(uf){const outline=country.features.find(f=>stateCode(f)===uf);if(outline)fit([outline],28,45);}
+    if(uf){const bound=country.features.find(f=>stateCode(f)===uf);if(bound)fit([bound],32,45);}
     if(uf&&!cache.has(uf)){
       target.setAttribute("aria-busy","true");
       try{
