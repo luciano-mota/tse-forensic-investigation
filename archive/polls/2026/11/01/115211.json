@@ -1,0 +1,16 @@
+{
+  "polled_at": "2026-11-01T11:52:11Z",
+  "dataset_count": 3,
+  "resources_seen": 229,
+  "versions_discovered": 1,
+  "originals_uploaded": 0,
+  "storage_enabled": false,
+  "changes": [
+    {
+      "id": "e54adb15-931b-462e-a506-7b6330dd2a9d",
+      "new_metadata": true,
+      "stored_original": false
+    }
+  ],
+  "errors": []
+}
