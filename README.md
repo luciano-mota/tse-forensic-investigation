@@ -163,3 +163,9 @@ O pipeline guarda apenas agregados JSON compactos e hashes SHA-256 dos bytes efe
 Validações: origem HTTPS TSE, limites de tamanho e número de linhas, filtro presidencial, UFs válidas, ausência de duplicatas de zona/candidato, cobertura das 27 UFs em ambos os turnos, totalizadores oficiais de referência reportados separadamente. Quando o arquivo é rejeitado, uma versão parcial não substitui uma válida. Não associar qualquer diferença isolada a irregularidades.
 
 Os metadados do catálogo continuam monitorados com registro de cada consulta na branch `archive-history`. A ausência de cópia ZIP significa que só podemos reproduzir o mesmo processamento enquanto o arquivo ainda estiver disponível no TSE. Para custódia forense duradoura, armazenamento imutável de **originais** permanece recomendado.
+
+### Controles adicionais na extração nacional
+
+O ZIP de votação nominal por município e zona de 2026 tem centenas de MB compactados (aprox. 455 MB em coleta pública de outubro). O limite de download foi aumentado para 768 MiB, com **descompactação de apenas um CSV nacional canônico** (`*_BR.csv` para presidente ou `*_BRASIL.csv` quando não houver BR). Os membros por UF e o membro BRASIL não são concatenados ao BR, evitando duplicidade de votos.
+
+Após a primeira captura e validação, cada execução consulta cabeçalhos HTTPS (ETag/Last-Modified) para ambos os originais e reaproveita o último agregado apenas quando as informações coincidem. Se a origem não aceitar HEAD, o sistema processa novamente, mantendo registro da checagem. Falhas escrevem `archive/derived/last_attempt.json` na branch `archive-history`, sem substituir o último agregado válido. Comparações futuras devem levar em conta atrasos de publicação do próprio TSE.

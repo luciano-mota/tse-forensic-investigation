@@ -7,6 +7,7 @@ from unittest.mock import patch
 
 from scripts.tse_live_extract import (
     build_atlas, find_resources, parse_zip, president, OFFICIAL_FILES,
+    MAX_COMPRESSED, unchanged_official_sources,
 )
 
 class DerivedAtlasTest(unittest.TestCase):
@@ -57,6 +58,45 @@ class DerivedAtlasTest(unittest.TestCase):
             self.assertEqual(atlas["rounds"]["2"]["MA"]["candidates"]["22"], 97)
             self.assertEqual(atlas["rounds"]["2"]["MA"]["municipalities"]["12000"]["turnout"]["abstentions"],50)
             self.assertEqual(atlas["coverage"]["2"]["states_with_votes"],1)
+
+    def test_official_national_zip_can_exceed_previous_300mb_limit(self):
+        self.assertGreater(MAX_COMPRESSED, 455_236_941)
+
+    def test_prefers_brazil_presidential_csv_and_ignores_state_duplicates(self):
+        columns = ("NR_TURNO;SG_UF;CD_MUNICIPIO;NM_MUNICIPIO;NR_ZONA;"
+                   "CD_CARGO;DS_CARGO;NR_CANDIDATO;QT_VOTOS_NOMINAIS\n")
+        row = "2;MA;12000;CIDADE TESTE;1;1;PRESIDENTE;13;100\n"
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "votes.zip"
+            with zipfile.ZipFile(path, "w") as z:
+                z.writestr("votacao_candidato_munzona_2026_BR.csv", columns + row)
+                z.writestr("votacao_candidato_munzona_2026_BRASIL.csv", columns + row)
+                z.writestr("votacao_candidato_munzona_2026_MA.csv", columns + row)
+            stats = {"lines_read": 0, "president_rows": 0, "arithmetic_mismatches": 0,
+                     "seen": set()}
+            rows = {}
+            parse_zip(path, "votes", rows, stats)
+            self.assertEqual(stats["lines_read"], 1)
+            self.assertEqual(rows[(2, "MA", "12000")]["candidates"]["13"], 100)
+            self.assertTrue(stats["csv_member"].endswith("_BR.csv"))
+
+    def test_remote_head_equal_etag_can_skip_re_download(self):
+        from unittest.mock import Mock
+        from email.message import Message
+        headers = Message()
+        headers.add_header("ETag", '"abc"')
+        headers.add_header("Last-Modified", "Thu, 29 Oct 2026 00:00:00 GMT")
+        response = Mock(status=200, headers=headers)
+        response.__enter__ = Mock(return_value=response)
+        response.__exit__ = Mock(return_value=False)
+        sources = {"votes": {"url":"https://cdn.tse.jus.br/x.zip","metadata_sha256":"f"*64}}
+        previous = {"sources":{"votes":{"sha256":"a"*64,"metadata_sha256":"f"*64,
+                                         "etag":'"abc"', "last_modified":headers["Last-Modified"]}}}
+        with patch("scripts.tse_live_extract.request",return_value=response) as caller:
+            self.assertTrue(unchanged_official_sources(sources, previous))
+            caller.assert_called_once()
+        with patch("scripts.tse_live_extract.request",side_effect=OSError("offline")):
+            self.assertFalse(unchanged_official_sources(sources,previous))
 
     def test_reject_duplicate_and_corrupt_aptos(self):
         with tempfile.TemporaryDirectory() as d:
