@@ -22,4 +22,6 @@ jobs:
         with:
           python-version: "3.12"
       - name: Verify catalog snapshots, immutable history, and URL allowlist
-        run: python -m unittest discover -s tests -p 'test_tse_sync.py' -v
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
+      - name: Check browser script syntax
+        run: node --check src/main/resources/static/app.js
