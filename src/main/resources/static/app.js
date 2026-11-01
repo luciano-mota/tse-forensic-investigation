@@ -126,13 +126,7 @@ function setup() {
       if(!reading||reading.status==="INSUFFICIENT"||!state.liveAtlas){
         out.textContent="Dados oficiais insuficientes para uma explicação assistida.";return;
       }
-      const region=selectedRegion();
-      const payload={
-        region:state.municipalityName||(state.uf?UF_NAMES[state.uf]:"Brasil"),
-        round:state.round,validVotes:region?.validVotes||0,
-        candidates:(region?.candidates||[]).slice(0,20).map(c=>({number:c.number,votes:c.votes,percentage:c.percentage})),
-        analysis:JSON.stringify(reading).slice(0,10500)
-      };
+      const payload={uf:state.uf||"",municipalityCode:state.municipalityCode?String(state.municipalityCode):""};
       button.disabled=true;out.textContent="Consultando modelo externo...";
       try{
         const response=await fetch("/api/v1/ai/explain",{
