@@ -55,6 +55,28 @@ const state = {
 };
 
 const $ = id => document.getElementById(id);
+let nationalCities = null;
+let nationalCitiesLoading = null;
+// DB-backed national search loads each state once, with bounded parallelism.
+async function ensureNationalCities(){
+    if(!state.hasDbData || nationalCities || nationalCitiesLoading)return nationalCitiesLoading;
+    nationalCitiesLoading=(async()=>{
+        const ufs=Object.keys(UF_NAMES).filter(uf=>uf!=="ZZ");
+        const items=[];let next=0,failures=0;
+        await Promise.all(Array.from({length:4},async()=>{
+            while(next<ufs.length){
+                const uf=ufs[next++];
+                try{const cities=await getJson("/elections/states/"+uf+"/municipalities?round="+state.round);
+                    items.push(...cities.map(city=>({...city,uf})));
+                }catch(error){failures++;}
+            }
+        }));
+        nationalCities=items;
+        if(failures){$("city-search-feedback").textContent="Busca parcial: "+failures+" UF(s) indisponíveis na API.";}
+        renderMunicipalities();
+    })().finally(()=>{nationalCitiesLoading=null;});
+    return nationalCitiesLoading;
+}
 const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, char => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
 }[char]));
@@ -98,7 +120,10 @@ function setup() {
     $("archive-search").addEventListener("input", renderArchive);
     $("archive-dataset").addEventListener("change", renderArchive);
     $("archive-refresh").addEventListener("click", loadArchive);
-    $("city-search").addEventListener("input", renderMunicipalities);
+    $("city-search").addEventListener("input", () => {
+        renderMunicipalities();
+        if(!state.uf && $("city-search").value.trim() && state.hasDbData)ensureNationalCities();
+    });
     $("city-rows").addEventListener("keydown",event=>{
         if((event.key==="Enter"||event.key===" ")&&event.target.closest("tr[data-municipality]")){
             event.preventDefault();
@@ -171,6 +196,7 @@ async function loadData() {
     state.sources = results[2].value;
     state.hasData = state.overview.validVotes > 0;
     state.hasDbData = state.hasData;
+    nationalCities = null;
     if (state.hasDbData) state.liveAtlas = null;
     state.error = null;
     if (!state.hasData) {
@@ -238,13 +264,13 @@ function findMunicipality(uf,code) {
         const local=state.municipalities.find(city=>String(city.code)===String(code));
         if(local)return local;
     }
-    return state.liveAtlas&&!state.hasDbData
-        ? liveMunicipalities(state.round,uf).find(city=>String(city.code)===String(code))
-        : null;
+    if(state.hasDbData)return (nationalCities||[]).find(city=>city.uf===uf&&String(city.code)===String(code))||null;
+    return state.liveAtlas ? liveMunicipalities(state.round,uf).find(city=>String(city.code)===String(code)) : null;
 }
 function availableMunicipalities() {
     if(state.uf)return state.municipalities.map(city=>({...city,uf:state.uf}));
-    if(!state.liveAtlas||state.hasDbData)return [];
+    if(state.hasDbData)return nationalCities || [];
+    if(!state.liveAtlas)return [];
     return Object.keys(state.liveAtlas.rounds?.[String(state.round)]||{})
         .filter(uf=>UF_NAMES[uf]&&uf!=="ZZ")
         .flatMap(uf=>liveMunicipalities(state.round,uf).map(city=>({...city,uf})));
@@ -281,6 +307,11 @@ function renderMunicipalities() {
     }
     const tokens=term.split(" ").filter(Boolean);
     const all=availableMunicipalities();
+    if(!state.uf&&term&&state.hasDbData&&!nationalCities){
+        if(feedback)feedback.textContent="Indexando municípios das 27 UFs para busca nacional...";
+        rows.innerHTML='<tr><td colspan="4" class="empty-table">Preparando índice de municípios...</td></tr>';
+        return;
+    }
     const matches=all.filter(city=>{
         const haystack=normalizePlace(city.name+" "+city.uf+" "+(UF_NAMES[city.uf]||""));
         return tokens.every(token=>haystack.includes(token));
