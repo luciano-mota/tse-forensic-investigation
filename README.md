@@ -169,3 +169,15 @@ Os metadados do catálogo continuam monitorados com registro de cada consulta na
 O ZIP de votação nominal por município e zona de 2026 tem centenas de MB compactados (aprox. 455 MB em coleta pública de outubro). O limite de download foi aumentado para 768 MiB, com **descompactação de apenas um CSV nacional canônico** (`*_BR.csv` para presidente ou `*_BRASIL.csv` quando não houver BR). Os membros por UF e o membro BRASIL não são concatenados ao BR, evitando duplicidade de votos.
 
 Após a primeira captura e validação, cada execução consulta cabeçalhos HTTPS (ETag/Last-Modified) para ambos os originais e reaproveita o último agregado apenas quando as informações coincidem. Se a origem não aceitar HEAD, o sistema processa novamente, mantendo registro da checagem. Falhas escrevem `archive/derived/last_attempt.json` na branch `archive-history`, sem substituir o último agregado válido. Comparações futuras devem levar em conta atrasos de publicação do próprio TSE.
+
+## Relatório técnico, estatístico e jurídico-contextual (PDF)
+
+O Atlas oferece a opção **Emitir relatório PDF** na seção "Evidências, não suposições". A geração é feita no servidor Java com Apache PDFBox, usando o snapshot oficial versionado que alimenta o mapa, sem serviços externos pagos.
+
+Endpoint: GET /api/v1/reports/presidential-2026.pdf?uf=MA&municipalityCode=... (sem parâmetros: Brasil; com UF: estado; com UF e código: município).
+
+O documento A4, no estilo visual da plataforma, inclui capa, carimbo da versão e data de emissão; resultados dos dois turnos; votos por candidatura; fórmula e substituição dos valores de abstenção, comparecimento e diferenças; arquitetura de coleta CKAN e parsing streaming; hashes SHA-256 e links clicáveis; limitações, verificações e uma seção jurídico-eleitoral com Constituição, leis eleitorais e resoluções TSE de fiscalização.
+
+O conteúdo interpreta os números de maneira descritiva. Uma anomalia estatística nunca é rotulada automaticamente como fraude. O documento não é um laudo judicial, não identifica comportamento individual de eleitores e não dispensa avaliação técnica ou jurídica específica.
+
+Se faltar cobertura de um dos turnos ou não houver versão oficial validada, o sistema recusa a emissão em vez de criar números artificiais.

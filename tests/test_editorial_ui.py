@@ -1,6 +1,7 @@
 """Stable-contract tests for the editorial forensic atlas shell."""
 import re
 import unittest
+import json
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -63,6 +64,30 @@ class EditorialExperienceTest(unittest.TestCase):
         self.assertIn('source.version!==state.liveAtlas?.derived_version', APP)
         self.assertIn('cron: "17 * * * *"', WORKFLOW)
         self.assertNotIn('6 horas UTC por GitHub Actions', HTML)
+
+    def test_self_hosted_geography_and_explanation(self):
+        source = ROOT / "src/main/resources/static"
+        states = json.loads((source / "geo/estados.geojson").read_text(encoding="utf-8"))
+        self.assertEqual(len(states["features"]), 27)
+        codes = {f["properties"]["sigla"] for f in states["features"]}
+        self.assertEqual(len(codes), 27)
+        feature_count = 0
+        for uf in codes:
+            path = source / "geo" / (uf + ".geojson")
+            self.assertTrue(path.exists(), "Missing municipality layer: " + uf)
+            data = json.loads(path.read_text(encoding="utf-8"))
+            feature_count += len(data["features"])
+            self.assertTrue(all("nome" in feature.get("properties", {})
+                                for feature in data["features"]))
+        self.assertGreater(feature_count, 5500)
+        self.assertIn('id="map-zoom-in"', HTML)
+        self.assertIn('id="map-zoom-out"', HTML)
+        self.assertIn('id="map-reset"', HTML)
+        self.assertIn('id="analysis-content"', HTML)
+        self.assertIn('id="analysis-status"', HTML)
+        self.assertIn('import { createAtlasMap }', APP)
+        self.assertNotIn('servicodados.ibge.gov.br/api/v3/malhas', APP)
+        self.assertNotIn('cdn.jsdelivr.net/npm/d3-geo', APP)
 
     def test_features_are_in_reading_order_not_numbered_cards(self):
         position = {ident: HTML.index('id="' + ident + '"')
