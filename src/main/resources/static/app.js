@@ -615,7 +615,9 @@ function displayLiveTurnout() {
         ? "Cobertura insuficiente para comparar turnos."
         : ((two.rate-one.rate)>0?"+":"")+percentageFormat.format(two.rate-one.rate)+
           " p.p. · comparação descritiva";
-    $("turnout-status").textContent="Síntese dos CSVs oficiais por município/zona, extraída automaticamente. Não é conferência por seção.";
+    const mismatches=Number(state.liveAtlas?.parse_stats?.turnout?.arithmetic_mismatches||0);
+    $("turnout-status").textContent="Síntese oficial por município/zona. Não é conferência por seção."+
+        (mismatches>0?" "+votes(mismatches)+" registros com igualdade aritmética pendente de reconciliação; não indicam fraude por si.":"");
     $("section-changes-list").textContent="A comparação por seção exige o arquivo oficial de apuração por seção; este espelho inicial tem granularidade municipal.";
 }
 function liveVoteShifts(query) {
@@ -671,8 +673,11 @@ async function loadOfficialAtlas() {
         const date=live.observed_at?new Date(live.observed_at).toLocaleString("pt-BR",{
             timeZone:"America/Sao_Paulo"}):"horário desconhecido";
         const ref=$("national-reference-check");
-        ref.textContent="DADOS DERIVADOS DE ORIGINAIS DO TSE · leitura "+date+
-            " · consulta periódica, não resultado em tempo real · ZIPs originais descartados após extração.";
+        const check=live.national_reference?.status==="MATCHES_TSE_PUBLISHED_TOTALS"
+            ? "2º turno conferido com os totais nacionais publicados pelo TSE."
+            : "Referência nacional ainda não conciliada. Verifique cobertura e transformações.";
+        ref.textContent=check+" Leitura "+date+
+            " · verificação periódica, não transmissão de votos em tempo real · originais não arquivados.";
         renderMetrics();
         $("metric-votes-note").textContent="TSE · agregados por município/zona · "+state.round+"º turno";
         $("metric-sources").textContent=String(state.sources.length);
