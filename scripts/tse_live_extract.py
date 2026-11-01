@@ -255,6 +255,23 @@ def run(history: Path, *, fetch=download) -> dict:
     observed = datetime.now(timezone.utc).isoformat()
     atlas = build_atlas(votes, turnout, sources, observed=observed)
     atlas["parse_stats"] = stats
+    if atlas["coverage"]["1"]["states_with_votes"] < 27 or atlas["coverage"]["2"]["states_with_votes"] < 27:
+        raise ValueError("Presidential vote coverage does not include all 27 federative units")
+    if atlas["coverage"]["1"]["states_with_turnout"] < 27 or atlas["coverage"]["2"]["states_with_turnout"] < 27:
+        raise ValueError("Turnout dataset has incomplete UF coverage")
+    reference = {13: 64_256_232, 22: 59_826_041}
+    published = {}
+    for state in atlas["rounds"]["2"].values():
+        for no, votes_count in state.get("candidates", {}).items():
+            published[no] = published.get(no, 0) + votes_count
+    atlas["national_reference"] = {
+        "status": ("MATCHES_TSE_PUBLISHED_TOTALS" if
+                   all(published.get(str(no), 0) == value for no, value in reference.items())
+                   else "REVIEW_DIFFERENCE"),
+        "expected": reference,
+        "observed": {str(no): published.get(str(no), 0) for no in reference},
+        "limitation": "Matching published totals does not attest voting machine software integrity."
+    }
     serialized = canonical(atlas)
     # Do not create duplicate data versions if only the observation time changed.
     sources_hash = digest(canonical({k: v["sha256"] for k, v in sources.items()}))
