@@ -16,8 +16,21 @@ const IBGE_CODES = {
     28: "SE", 29: "BA", 31: "MG", 32: "ES", 33: "RJ", 35: "SP",
     41: "PR", 42: "SC", 43: "RS", 50: "MS", 51: "MT", 52: "GO", 53: "DF"
 };
-const LABELS = { 13: "Lula (PT)", 22: "Flávio Bolsonaro (PL)" };
-const CANDIDATE_PRESENTATION = Object.freeze({13:{party:"PT",color:"#df4557",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/09.07.2026%20-%20Presidente%20Lula.jpg?width=240"},22:{party:"PL",color:"#368dd7",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/2026%20FLAVIO%20BOLSONARO%20CANDIDATO%20PRESIDENTE%20TSE%20%28280002551544%29%20%28cropped%29.jpg?width=240"}});
+const LABELS = {
+  13:"Lula (PT)",22:"Flávio Bolsonaro (PL)",70:"Augusto Cury (Avante)",
+  14:"Renan Santos (Missão)",55:"Ronaldo Caiado (PSD)",30:"Romeu Zema (Novo)",
+  80:"Samara Martins (UP)",16:"Hertz Dias (PSTU)",27:"Clariana Barão (DC)",
+  21:"Edmilson Costa (PCB)",35:"Wilson Grassi (Democrata)",29:"Rui Costa Pimenta (PCO)"
+};
+const CANDIDATE_PRESENTATION=Object.freeze({
+  13:{party:"PT",color:"#df4557",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/09.07.2026%20-%20Presidente%20Lula.jpg?width=240"},
+  22:{party:"PL",color:"#368dd7",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/2026%20FLAVIO%20BOLSONARO%20CANDIDATO%20PRESIDENTE%20TSE%20%28280002551544%29%20%28cropped%29.jpg?width=240"},
+  70:{party:"Avante",color:"#178a80"},14:{party:"Missão",color:"#43a5b5"},
+  55:{party:"PSD",color:"#5f9d54"},30:{party:"Novo",color:"#e78a36"},
+  80:{party:"UP",color:"#9d2935"},16:{party:"PSTU",color:"#b53948"},
+  27:{party:"DC",color:"#a5b468"},21:{party:"PCB",color:"#b12d3b"},
+  35:{party:"Democrata",color:"#618a95"},29:{party:"PCO",color:"#9b3944"}
+});
 const numberFormat = new Intl.NumberFormat("pt-BR");
 const percentageFormat = new Intl.NumberFormat("pt-BR", { maximumFractionDigits: 2, minimumFractionDigits: 2 });
 const state = {
@@ -183,12 +196,12 @@ function updateRegion() {
         const identity = CANDIDATE_PRESENTATION[candidate.number];
         const color = identity?.color || "#8da1b4";
         const percent = Math.min(100,Math.max(0,Number(candidate.percentage)));
-        const portrait = identity
+        const portrait = identity?.picture
             ? '<span class="candidate-photo-frame" style="--party-color:'+color+'"><img class="candidate-photo" src="'+
               escapeHtml(identity.picture)+'" alt="Foto de '+escapeHtml(label(candidate))+
               '" loading="lazy" decoding="async" onerror="this.style.display=\'none\'"/>'+
               '<span class="candidate-photo-fallback" aria-hidden="true">'+candidate.number+'</span></span>'
-            : '<span class="candidate-number">'+Number(candidate.number)+'</span>';
+            : '<span class="candidate-number" style="border-color:'+color+'">'+Number(candidate.number)+'</span>';
         return '<div class="candidate" style="--party-color:'+color+'">'+
             '<div class="candidate-heading"><div class="candidate-name">'+portrait+
             '<span class="candidate-title"><strong>'+escapeHtml(label(candidate))+'</strong>'+
