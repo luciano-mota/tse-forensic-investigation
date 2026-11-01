@@ -30,7 +30,9 @@ const state = {
     geoModule: null,
     error: null,
     hasData: false,
-    archive: null
+    archive: null,
+    liveAtlas: null,
+    hasDbData: false
 };
 
 const $ = id => document.getElementById(id);
@@ -136,6 +138,8 @@ async function loadData() {
     state.states = results[1].value;
     state.sources = results[2].value;
     state.hasData = state.overview.validVotes > 0;
+    state.hasDbData = state.hasData;
+    if (state.hasDbData) state.liveAtlas = null;
     state.error = null;
     if (!state.hasData) {
         $("data-warning").textContent =
@@ -149,6 +153,7 @@ async function loadData() {
     renderMap();
     await loadMunicipalities();
     await loadForensicPanels();
+    await loadOfficialAtlas();
 }
 
 function renderMetrics() {
@@ -184,6 +189,11 @@ function updateRegion() {
 
 async function loadMunicipalities() {
     state.municipalities = [];
+    if (state.liveAtlas && !state.hasDbData && state.uf) {
+        state.municipalities = liveMunicipalities(state.round,state.uf);
+        renderMunicipalities();
+        return;
+    }
     if (!state.uf || state.uf === "ZZ") {
         renderMunicipalities();
         return;
@@ -226,7 +236,9 @@ async function runComparison() {
             thresholdPp: $("threshold").value
         });
         if (state.uf) query.set("uf", state.uf);
-        const data = await getJson("/elections/comparison?" + query);
+        const data = state.liveAtlas && !state.hasDbData
+            ? { shifts: liveVoteShifts(query) }
+            : await getJson("/elections/comparison?" + query);
         const entries = data.shifts ?? [];
         if (!entries.length) {
             $("comparison-rows").innerHTML = '<tr><td colspan="5" class="empty-table">Nenhuma variação encontrada nos dados disponíveis com estes filtros. Isso não constitui prova de integridade ou de ausência de fraude.</td></tr>';
@@ -317,6 +329,8 @@ function geometryUF(feature) {
 
 function selectUF(uf) {
     state.uf = uf;
+    state.municipalityCode = null;
+    state.municipalityName = null;
     $("uf-select").value = uf;
     updateRegion();
     renderMap();
@@ -441,6 +455,7 @@ async function loadForensicPanels() {
     } else {
         $("bweb-delta").textContent = "API BWEB indisponível.";
     }
+    if (state.liveAtlas && !state.hasDbData) displayLiveTurnout();
 }
 
 async function loadArchive() {
@@ -537,3 +552,128 @@ function enableDriftIndex() {
     });
 }
 enableDriftIndex();
+
+
+/**
+ * Storage-free, transparently versioned mirror.
+ * The GitHub Actions runner streams the *original official TSE files* into temporary
+ * files; only independently checkable aggregates + sha256 remain in public history.
+ */
+function liveRegion(code, name, candidates) {
+    const results = Object.entries(candidates || {}).map(([number,count]) =>
+        ({ number:Number(number),name:LABELS[Number(number)] || ("Votável " + number),
+           votes:Number(count),percentage:0 })).filter(c=>Number.isFinite(c.votes) && c.votes>=0);
+    const validVotes = results.reduce((n,c)=>n+c.votes,0);
+    for(const result of results) result.percentage=validVotes?100*result.votes/validVotes:0;
+    results.sort((a,b)=>b.votes-a.votes);
+    return {code,name,validVotes,candidates:results};
+}
+function liveState(round, uf) {
+    return state.liveAtlas?.rounds?.[String(round)]?.[uf] || null;
+}
+function liveMunicipalities(round, uf) {
+    const original=liveState(round,uf)?.municipalities || {};
+    return Object.entries(original).map(([code,city])=>
+        liveRegion(code,city.name,city.candidates)).sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
+}
+function liveAggregate(round, uf, municipalityCode) {
+    const data=state.liveAtlas?.rounds?.[String(round)] || {};
+    const regions=uf?(data[uf]?[data[uf]]:[]):Object.values(data);
+    let registered=0,turnout=0,abstentions=0,sections=0;
+    for(const region of regions) {
+        const municipalities=municipalityCode
+            ? (region.municipalities?.[municipalityCode]?[region.municipalities[municipalityCode]]:[])
+            : Object.values(region.municipalities || {});
+        for(const municipal of municipalities) {
+            if (!municipal.turnout) continue;
+            registered+=municipal.turnout.registered;
+            turnout+=municipal.turnout.turnout;
+            abstentions+=municipal.turnout.abstentions;
+            sections++;
+        }
+    }
+    return {registered,turnout,abstentions,sections,rate:registered?100*abstentions/registered:null};
+}
+function displayLiveTurnout() {
+    const one=liveAggregate(1,state.uf,state.municipalityCode);
+    const two=liveAggregate(2,state.uf,state.municipalityCode);
+    for(const [key,item] of [["first",one],["second",two]]) {
+        $("turnout-"+key).textContent=item.rate===null?"—":pct(item.rate);
+        $("turnout-"+key+"-info").textContent=item.sections
+            ? votes(item.abstentions)+" abstenções em "+votes(item.sections)+" municípios"
+            : "Cobertura indisponível";
+    }
+    $("turnout-delta").textContent=(one.rate==null||two.rate==null)
+        ? "Cobertura insuficiente para comparar turnos."
+        : ((two.rate-one.rate)>0?"+":"")+percentageFormat.format(two.rate-one.rate)+
+          " p.p. · comparação descritiva";
+    $("turnout-status").textContent="Síntese dos CSVs oficiais por município/zona, extraída automaticamente. Não é conferência por seção.";
+    $("section-changes-list").textContent="A comparação por seção exige o arquivo oficial de apuração por seção; este espelho inicial tem granularidade municipal.";
+}
+function liveVoteShifts(query) {
+    const minVotes=Number(query.get("minVotes")||500),threshold=Number(query.get("thresholdPp")||15);
+    const a=state.liveAtlas?.rounds?.["1"]||{},b=state.liveAtlas?.rounds?.["2"]||{};
+    const ufs=query.get("uf")?[query.get("uf")]:Object.keys(b);
+    const changes=[];
+    for(const uf of ufs) {
+        const before=a[uf]?.municipalities||{},after=b[uf]?.municipalities||{};
+        for(const [code,city] of Object.entries(after)) {
+            const prev=before[code];
+            if(!prev) continue;
+            const first=liveRegion(code,prev.name,prev.candidates);
+            const last=liveRegion(code,city.name,city.candidates);
+            if(first.validVotes<minVotes||last.validVotes<minVotes)continue;
+            for(const cand of [13,22]) {
+                const firstVotes=Number(prev.candidates?.[String(cand)]||0);
+                const secondVotes=Number(city.candidates?.[String(cand)]||0);
+                const changePp=100*secondVotes/last.validVotes-100*firstVotes/first.validVotes;
+                if(Math.abs(changePp)<threshold)continue;
+                changes.push({uf,municipality:city.name,municipalityCode:code,
+                    candidateNumber:cand,firstVotes,secondVotes,changePp});
+            }
+        }
+    }
+    return changes.sort((a,b)=>Math.abs(b.changePp)-Math.abs(a.changePp)).slice(0,150);
+}
+async function loadOfficialAtlas() {
+    if(state.hasDbData) return;
+    try{
+        const live=await getJson("/live/atlas");
+        if(!live.rounds||live.status!=="DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE"){
+            $("data-warning").textContent=live.warning ||
+              "Ainda não há uma leitura integral dos arquivos nacionais do TSE validada pelo pipeline.";
+            $("data-warning").hidden=false;
+            return;
+        }
+        state.liveAtlas=live;
+        state.states=Object.entries(live.rounds[String(state.round)]||{}).map(([uf,region])=>
+            liveRegion(uf,UF_NAMES[uf]||uf,region.candidates||{})).filter(r=>r.validVotes>0);
+        const national={};
+        for(const region of state.states)
+            for(const cand of region.candidates)national[cand.number]=(national[cand.number]||0)+cand.votes;
+        state.overview=liveRegion("BR","Brasil",national);
+        state.hasData=state.overview.validVotes>0;
+        state.sources=Object.entries(live.sources||{}).map(([kind,source])=>({
+            filename:(kind==="votes"?"Votação por candidato":"Comparecimento")+" · "+(source.url||""),
+            sha256:source.sha256||"",rows:live.parse_stats?.[kind]?.president_rows||0,
+            importedAt:live.observed_at||""
+        }));
+        $("data-warning").hidden=true;
+        const date=live.observed_at?new Date(live.observed_at).toLocaleString("pt-BR",{
+            timeZone:"America/Sao_Paulo"}):"horário desconhecido";
+        const ref=$("national-reference-check");
+        ref.textContent="DADOS DERIVADOS DE ORIGINAIS DO TSE · leitura "+date+
+            " · consulta periódica, não resultado em tempo real · ZIPs originais descartados após extração.";
+        renderMetrics();
+        $("metric-votes-note").textContent="TSE · agregados por município/zona · "+state.round+"º turno";
+        $("metric-sources").textContent=String(state.sources.length);
+        renderSources();
+        updateRegion();
+        renderMap();
+        await loadMunicipalities();
+        displayLiveTurnout();
+    }catch(error){
+        $("data-warning").textContent="O espelho de totais oficiais está indisponível; nenhum resultado foi inferido.";
+        $("data-warning").hidden=false;
+    }
+}

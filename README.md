@@ -153,3 +153,13 @@ Endpoints:
 Não confundir **metadata version** com **versão de bytes**; um repositório pode anunciar mudança sem disponibilizar outro binário e vice-versa. Uma versão eliminada antes da primeira coleta bem-sucedida não pode ser recuperada retrospectivamente.
 
 Veja também [manual do arquivo](archive/README.md) e [protocolo forense](docs/INVESTIGATION_PROTOCOL.md).
+
+## Modo gratuito: leitura periódica diretamente do TSE
+
+O projeto agora possui uma modalidade **sem bucket R2/S3** que recebe temporariamente os arquivos nacionais `votacao_candidato_munzona_2026.zip` e `detalhe_votacao_munzona_2026.zip`, ambos obtidos de URLs oficializadas pelo catálogo CKAN do TSE. O GitHub Actions **não conserva os ZIPs**: lê seus CSVs com `csv.DictReader`, filtra `CD_CARGO=1`/Presidente, separa turnos e municípios, calcula votos de cada candidato, aptos, comparecimento e abstenções e apaga os temporários ao final. O procedimento é agendado a cada **6 horas**, portanto **não equivale a apuração em tempo real instantâneo**. Pode haver atrasos, indisponibilidade e cache do CDN; todos precisam ser relatados.
+
+O pipeline guarda apenas agregados JSON compactos e hashes SHA-256 dos bytes efetivamente recebidos (não há cópia binária verificável). A primeira extração gera `archive/derived/current.json` e `archive/derived/versions/<hash>/atlas.json` na branch `archive-history`. Cada versão nova de arquivo original cria nova chave; versões antigas dos **dados derivados** não são sobrescritas. O endpoint `GET /api/v1/live/atlas` expõe esses agregados à interface quando a base local está vazia. A UI oferece mapa, votos por UF/município, comparação 1º×2º turno e abstenção municipal. Comparação por seção, biometria e reconstrução RDV continuam exigindo fontes próprias e **não aparecem como confirmadas**.
+
+Validações: origem HTTPS TSE, limites de tamanho e número de linhas, filtro presidencial, UFs válidas, ausência de duplicatas de zona/candidato, cobertura das 27 UFs em ambos os turnos, totalizadores oficiais de referência reportados separadamente. Quando o arquivo é rejeitado, uma versão parcial não substitui uma válida. Não associar qualquer diferença isolada a irregularidades.
+
+Os metadados do catálogo continuam monitorados com registro de cada consulta na branch `archive-history`. A ausência de cópia ZIP significa que só podemos reproduzir o mesmo processamento enquanto o arquivo ainda estiver disponível no TSE. Para custódia forense duradoura, armazenamento imutável de **originais** permanece recomendado.

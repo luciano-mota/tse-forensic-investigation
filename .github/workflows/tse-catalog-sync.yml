@@ -7,6 +7,7 @@ on:
     branches: [main]
     paths:
       - scripts/tse_sync.py
+      - scripts/tse_live_extract.py
       - .github/workflows/tse-catalog-sync.yml
 permissions:
   contents: write
@@ -16,7 +17,7 @@ concurrency:
 jobs:
   synchronize:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 55
     steps:
       - uses: actions/checkout@v4
         with:
@@ -26,7 +27,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Test archive collector
-        run: python -m unittest discover -s tests -p 'test_tse_sync.py' -v
+        run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Checkout immutable history branch separately
         run: |
           git fetch origin archive-history:refs/remotes/origin/archive-history
@@ -42,6 +43,9 @@ jobs:
           ARCHIVE_SECRET_ACCESS_KEY: ${{ secrets.TSE_ARCHIVE_SECRET_ACCESS_KEY }}
         run: |
           python scripts/tse_sync.py --archive-dir history/archive --max-files 4 --max-file-mb 250
+      - name: Extract official national presidential results without long-term ZIP storage
+        # Fail closed: never publish partial aggregates when the TSE cannot be read.
+        run: python -m scripts.tse_live_extract --history-dir history
       - name: Record observations on archive-history without redeploying main
         if: always()
         run: |
