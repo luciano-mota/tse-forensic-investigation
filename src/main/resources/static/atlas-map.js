@@ -1,5 +1,5 @@
 /* Self-hosted CC0 IBGE-derived map. No third-party map API or runtime library. */
-const W=740,H=485,NS="http://www.w3.org/2000/svg";
+const W=920,H=610,NS="http://www.w3.org/2000/svg";
 const COLORS={13:"#df4557",22:"#368dd7",70:"#178a80",14:"#43a5b5",55:"#5f9d54",30:"#e78a36",80:"#9d2935",16:"#b53948",27:"#a5b468",21:"#b12d3b",35:"#618a95",29:"#9b3944",none:"#294450",other:"#8ba4b5"};
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 export const normalizePlace=name=>String(name||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]+/g," ").trim().replace(/\s+/g," ");
@@ -43,6 +43,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   let country=null,uf="",selectedCode=null,selectedFeature=null;
   let projection=null,svg=null,land=null,camera={k:1,x:0,y:0};
   let suppressClickUntil=0,dragged=false,gesture=null;
+  let focusSequence=0;
   const pointers=new Map();
   function project(p){
     const [x,y]=mercator(p);
@@ -51,7 +52,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
   function configureProjection(data){
     const b=bounding(data.features,mercator);
     if(!b)throw new Error("Malha nacional sem coordenadas");
-    const u=Math.min(690/(b[2]-b[0]),430/(b[3]-b[1]));
+    const u=Math.min((W-65)/(b[2]-b[0]),(H-55)/(b[3]-b[1]));
     projection={a:b[0],b:b[1],u,dx:(W-(b[2]-b[0])*u)/2,dy:(H-(b[3]-b[1])*u)/2};
   }
   function cameraApply(){
@@ -81,18 +82,27 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     },{passive:false});
     svg.addEventListener("pointerdown",e=>{
       if(e.pointerType==="mouse"&&e.button!==0)return;
-      pointers.set(e.pointerId,cursor(e));dragged=false;gesture=null;
-      svg.setPointerCapture(e.pointerId);
+      const p=cursor(e);
+      pointers.set(e.pointerId,{...p,startX:p.x,startY:p.y});
+      dragged=false;gesture=null;
+      // Do not capture an ordinary tap: SVG pointer capture retargets click to the
+      // SVG root instead of the clicked state/municipal path.
     });
     svg.addEventListener("pointermove",e=>{
       if(!pointers.has(e.pointerId))return;
       const before=pointers.get(e.pointerId),after=cursor(e);
-      pointers.set(e.pointerId,after);
+      pointers.set(e.pointerId,{...before,...after});
       if(pointers.size===1){
         const dx=after.x-before.x,dy=after.y-before.y;
-        if(Math.abs(dx)+Math.abs(dy)>.3){dragged=true;camera.x+=dx;camera.y+=dy;cameraApply();}
+        const moved=Math.hypot(after.x-before.startX,after.y-before.startY)>5;
+        if(moved&&!dragged){
+          dragged=true;
+          try{svg.setPointerCapture(e.pointerId);}catch(ignore){}
+        }
+        if(dragged){camera.x+=dx;camera.y+=dy;cameraApply();}
       }else if(pointers.size===2){
         dragged=true;
+        try{svg.setPointerCapture(e.pointerId);}catch(ignore){}
         const [a,b]=[...pointers.values()];
         const dist=Math.hypot(a.x-b.x,a.y-b.y),mid={x:(a.x+b.x)/2,y:(a.y+b.y)/2};
         if(gesture&&gesture.dist>1){
@@ -174,9 +184,10 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     if(!r.ok)throw new Error("Mapa nacional HTTP "+r.status);
     const d=await r.json();
     if(!valid(d)||d.features.length!==27)throw new Error("Mapa nacional incompleto");
-    country=d;configureProjection(d);draw();fit(country.features,35,2);
+    country=d;configureProjection(d);draw();fit(country.features,24,2);
   }
   async function focusState(next){
+    const sequence=++focusSequence;
     uf=next||"";selectedCode=null;selectedFeature=null;tooltip.hidden=true;
     if(!country)return;
     if(uf&&!cache.has(uf)){
@@ -185,15 +196,17 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
         const r=await fetch("/geo/"+uf+".geojson",{cache:"force-cache"});
         if(!r.ok)throw new Error("HTTP "+r.status);
         const data=await r.json();
+        if(sequence!==focusSequence)return;
         if(!valid(data))throw new Error("Dados cartográficos incompletos");
         cache.set(uf,data);
       }catch(e){uf="";draw();fit(country.features);throw e;}
     }
+    if(sequence!==focusSequence)return;
     draw();
-    if(!uf)fit(country.features,35,2);
+    if(!uf)fit(country.features,24,2);
     else {
       const bound=country.features.find(f=>stateCode(f)===uf);
-      if(bound)fit([bound],28,32);
+      if(bound)fit([bound],36,45);
     }
   }
   function focusCityByCode(code,name){

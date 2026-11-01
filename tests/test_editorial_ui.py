@@ -85,7 +85,7 @@ class EditorialExperienceTest(unittest.TestCase):
         self.assertIn('id="map-reset"', HTML)
         self.assertIn('id="analysis-content"', HTML)
         self.assertIn('id="analysis-status"', HTML)
-        self.assertIn('import { createAtlasMap }', APP)
+        self.assertIn('import { createAtlasMap, normalizePlace }', APP)
         self.assertNotIn('servicodados.ibge.gov.br/api/v3/malhas', APP)
         self.assertNotIn('cdn.jsdelivr.net/npm/d3-geo', APP)
 

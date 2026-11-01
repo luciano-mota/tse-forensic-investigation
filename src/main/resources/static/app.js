@@ -1,4 +1,4 @@
-import { createAtlasMap } from "./atlas-map.js";
+import { createAtlasMap, normalizePlace } from "./atlas-map.js";
 import { buildElectionReading } from "./analysis.js";
 const API = "/api/v1";
 const UF_NAMES = {
@@ -99,12 +99,23 @@ function setup() {
     $("archive-dataset").addEventListener("change", renderArchive);
     $("archive-refresh").addEventListener("click", loadArchive);
     $("city-search").addEventListener("input", renderMunicipalities);
-    $("city-rows").addEventListener("click", event => {
+    $("city-rows").addEventListener("keydown",event=>{
+        if((event.key==="Enter"||event.key===" ")&&event.target.closest("tr[data-municipality]")){
+            event.preventDefault();
+            event.target.closest("tr").click();
+        }
+    });
+    $("city-rows").addEventListener("click", async event => {
         const row = event.target.closest("tr[data-municipality]");
         if (!row) return;
-        const item = state.municipalities.find(city => city.code === row.dataset.municipality);
+        const uf = row.dataset.uf || state.uf;
+        const code = row.dataset.municipality;
+        let item = findMunicipality(uf,code);
         if (!item) return;
-        selectMunicipality({uf:state.uf,code:item.code,name:item.name}, true);
+        if (uf !== state.uf) await selectUF(uf);
+        item = findMunicipality(uf,code);
+        if (!item) return;
+        selectMunicipality({uf,code:item.code,name:item.name},true);
         $("map").scrollIntoView({ behavior:"smooth", block:"start" });
     });
     $("clear-city").addEventListener("click", () => {
@@ -113,7 +124,10 @@ function setup() {
         updateRegion();
         updateMapTrail();
         state.mapController?.focusState(state.uf).catch(()=>{});
+        renderMetrics();
+        renderMunicipalities();
         loadForensicPanels();
+        if(state.liveAtlas&&!state.hasDbData)displayLiveTurnout();
     });
     $("run-comparison").addEventListener("click", runComparison);
     document.querySelectorAll(".nav-item").forEach(link => {
@@ -176,10 +190,13 @@ async function loadData() {
 }
 
 function renderMetrics() {
-    $("metric-votes").textContent = state.hasData ? votes(state.overview.validVotes) : "—";
-    $("metric-votes-note").textContent = state.hasData ? state.round + "º turno · Brasil" : "Sem arquivos importados";
-    $("metric-candidates").textContent = state.hasData ? votes(state.overview.candidates.length) : "—";
-    $("metric-states").textContent = state.states.length ? String(state.states.length) : "—";
+    const scoped = selectedRegion();
+    $("metric-votes").textContent = scoped?.validVotes ? votes(scoped.validVotes) : "—";
+    $("metric-votes-note").textContent = state.municipalityName
+        ? state.municipalityName+" · "+state.round+"º turno"
+        : state.uf ? UF_NAMES[state.uf]+" · "+state.round+"º turno" : state.round+"º turno · Brasil";
+    $("metric-candidates").textContent = scoped?.candidates?.length ? votes(scoped.candidates.length) : "—";
+    $("metric-states").textContent = state.uf ? "1" : (state.states.length ? String(state.states.length) : "—");
     $("metric-sources").textContent = state.sources.length ? String(state.sources.length) : "—";
 }
 
@@ -214,44 +231,83 @@ function updateRegion() {
     renderElectionReading();
 }
 
+// State names and all national cities are indexed from one already-verified TSE
+// snapshot. No per-keypress network requests, no forced UF selection.
+function findMunicipality(uf,code) {
+    if(uf===state.uf) {
+        const local=state.municipalities.find(city=>String(city.code)===String(code));
+        if(local)return local;
+    }
+    return state.liveAtlas&&!state.hasDbData
+        ? liveMunicipalities(state.round,uf).find(city=>String(city.code)===String(code))
+        : null;
+}
+function availableMunicipalities() {
+    if(state.uf)return state.municipalities.map(city=>({...city,uf:state.uf}));
+    if(!state.liveAtlas||state.hasDbData)return [];
+    return Object.keys(state.liveAtlas.rounds?.[String(state.round)]||{})
+        .filter(uf=>UF_NAMES[uf]&&uf!=="ZZ")
+        .flatMap(uf=>liveMunicipalities(state.round,uf).map(city=>({...city,uf})));
+}
 async function loadMunicipalities() {
-    state.municipalities = [];
-    if (state.liveAtlas && !state.hasDbData && state.uf) {
-        state.municipalities = liveMunicipalities(state.round,state.uf);
+    state.municipalities=[];
+    if(state.liveAtlas&&!state.hasDbData&&state.uf) {
+        state.municipalities=liveMunicipalities(state.round,state.uf);
         renderMunicipalities();
         state.mapController?.refresh();
         return;
     }
-    if (!state.uf || state.uf === "ZZ") {
+    if(!state.uf||state.uf==="ZZ"){
         renderMunicipalities();
         return;
     }
     try {
-        state.municipalities = await getJson("/elections/states/" + state.uf +
-            "/municipalities?round=" + state.round);
+        state.municipalities=await getJson("/elections/states/"+state.uf+
+            "/municipalities?round="+state.round);
         renderMunicipalities();
         state.mapController?.refresh();
-    } catch (error) {
-        $("city-rows").innerHTML = '<tr><td colspan="4" class="empty-table">Falha ao carregar os municípios.</td></tr>';
+    } catch(error) {
+        $("city-rows").innerHTML='<tr><td colspan="4" class="empty-table">Falha ao carregar os municípios desta UF.</td></tr>';
     }
 }
-
 function renderMunicipalities() {
-    const term = $("city-search").value.trim().toLocaleLowerCase("pt-BR");
-    const list = state.municipalities.filter(region =>
-        region.name.toLocaleLowerCase("pt-BR").includes(term)).slice(0, 200);
-    if (list.length === 0) {
-        $("city-rows").innerHTML = '<tr><td colspan="4" class="empty-table">' +
-            (state.uf ? "Nenhum município encontrado neste recorte." : "Selecione uma UF para consultar municípios.") +
-            '</td></tr>';
+    const term=normalizePlace($("city-search").value);
+    const rows=$("city-rows");
+    const feedback=$("city-search-feedback");
+    if(!state.uf&&!term){
+        rows.innerHTML='<tr><td colspan="4" class="empty-table">Digite um município acima para pesquisar em todo o Brasil, ou selecione um estado no mapa.</td></tr>';
+        if(feedback)feedback.textContent="Busque em todas as UFs, sem selecionar estado.";
         return;
     }
-    $("city-rows").innerHTML = list.map(region => {
-        const top = winner(region);
-        return '<tr data-municipality="' + escapeHtml(region.code) + '" title="Selecionar município para auditoria"><td><strong>' + escapeHtml(region.name) + '</strong></td>' +
-            '<td>' + votes(region.validVotes) + '</td>' +
-            '<td>' + (top ? escapeHtml(label(top)) : "—") + '</td>' +
-            '<td>' + (top ? pct(top.percentage) : "—") + '</td></tr>';
+    const tokens=term.split(" ").filter(Boolean);
+    const all=availableMunicipalities();
+    const matches=all.filter(city=>{
+        const haystack=normalizePlace(city.name+" "+city.uf+" "+(UF_NAMES[city.uf]||""));
+        return tokens.every(token=>haystack.includes(token));
+    });
+    matches.sort((a,b)=>a.name.localeCompare(b.name,"pt-BR")||
+        a.uf.localeCompare(b.uf));
+    const page=matches.slice(0,150);
+    if(feedback)feedback.textContent=matches.length
+        ?votes(matches.length)+" município(s) encontrado(s)"+
+          (matches.length>page.length?" · mostrando os primeiros "+page.length:"")
+        :term?"Nenhum município corresponde à pesquisa.":"";
+    if(!page.length) {
+        rows.innerHTML='<tr><td colspan="4" class="empty-table">'+
+            (term?"Nenhum município encontrado. Tente outro nome ou UF.":
+            "Não existem municípios disponíveis para este recorte.")+'</td></tr>';
+        return;
+    }
+    rows.innerHTML=page.map(city=>{
+        const top=winner(city);
+        return '<tr data-municipality="'+escapeHtml(city.code)+
+            '" data-uf="'+escapeHtml(city.uf)+
+            '" tabindex="0" title="Abrir município no mapa"><td><strong>'+
+            escapeHtml(city.name)+'</strong><small class="municipality-uf">'+
+            escapeHtml(city.uf)+'</small></td>'+
+            '<td>'+votes(city.validVotes)+'</td>'+
+            '<td>'+(top?escapeHtml(label(top)):"—")+'</td>'+
+            '<td>'+(top?pct(top.percentage):"—")+'</td></tr>';
     }).join("");
 }
 
@@ -365,11 +421,13 @@ function updateMapTrail(){
     $("map-reset").hidden=!state.uf;
 }
 async function selectUF(uf) {
-    const safe=UF_NAMES[uf]?uf:"";
+    const safe=uf&&UF_NAMES[uf]?uf:"";
     state.uf=safe;state.municipalityCode=null;state.municipalityName=null;
     $("uf-select").value=safe;
-    updateRegion();updateMapTrail();
+    updateMapTrail();
     await loadMunicipalities();
+    updateRegion();
+    renderMetrics();
     try {await state.mapController?.focusState(safe);}
     catch(error){$("data-warning").textContent="A malha municipal deste estado não pôde ser carregada; os dados eleitorais permanecem acessíveis na listagem.";$("data-warning").hidden=false;}
     await loadForensicPanels();
@@ -378,8 +436,14 @@ async function selectUF(uf) {
 function selectMunicipality(city,moveMap) {
     state.uf=city.uf;state.municipalityCode=city.code;
     state.municipalityName=city.name;
-    updateRegion();updateMapTrail();
-    if(moveMap)state.mapController?.focusCityByCode(city.code,city.name);
+    updateRegion();updateMapTrail();renderMetrics();
+    if(moveMap) {
+        const focused=state.mapController?.focusCityByCode(city.code,city.name);
+        if(!focused) {
+            $("map-tooltip").hidden=false;
+            $("map-tooltip").textContent="Dados municipais selecionados. Contorno geográfico não identificado com segurança.";
+        }
+    }
     loadForensicPanels();
     if(state.liveAtlas&&!state.hasDbData)displayLiveTurnout();
 }
@@ -668,13 +732,13 @@ async function loadOfficialAtlas() {
         ref.textContent=check+" Leitura "+date+
             " · verificação periódica, não transmissão de votos em tempo real · originais não arquivados.";
         renderMetrics();
-        $("metric-votes-note").textContent="TSE · agregados por município/zona · "+state.round+"º turno";
         $("metric-sources").textContent=String(state.sources.length);
         renderSources();
         updateRegion();
         await loadMunicipalities();
         renderMap();
         updateRegion();
+        renderMetrics();
         displayLiveTurnout();
     }catch(error){
         $("data-warning").textContent="O espelho de totais oficiais está indisponível; nenhum resultado foi inferido.";

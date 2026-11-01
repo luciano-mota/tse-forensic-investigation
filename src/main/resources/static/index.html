@@ -52,14 +52,14 @@
       <div class="atlas-instruction">Escolha uma unidade no mapa ou use os filtros acima.<br/>Cada recorte leva você mais perto da fonte.</div>
     </div>
     <div class="atlas-stage">
-      <div class="atlas-grid-mark" aria-hidden="true">BR<br/>26</div>
+      
       <section class="panel map-panel" id="map" aria-labelledby="map-title">
                     <div class="panel-header">
                         <div><div class="eyebrow">DISTRIBUIÇÃO GEOGRÁFICA</div><h2 id="map-title">Cartografia dos dados</h2></div>
                         <span class="panel-label">PRESIDENTE · <span class="round-label">2º TURNO</span></span>
                     </div>
                     <div class="map-area">
-                        <div class="map-topline"><span id="map-trail">BRASIL</span><span>ZOOM · ARRASTE · TOQUE</span></div>
+                        <div class="map-topline"><span id="map-trail">BRASIL</span><span>CLIQUE · ZOOM · ARRASTE · PINÇA</span></div>
                         <div class="map-navigation" role="group" aria-label="Controles do mapa">
                             <button id="map-zoom-in" type="button" aria-label="Aproximar mapa" title="Aproximar">+</button>
                             <button id="map-zoom-out" type="button" aria-label="Afastar mapa" title="Afastar">−</button>
@@ -139,8 +139,9 @@
                 <div class="panel-header">
                     <div><div class="eyebrow">GRANULARIDADE TERRITORIAL</div><h2>Lugares, um a um</h2></div>
                     <label for="city-search" class="sr-only">Buscar município</label>
-                    <input id="city-search" type="search" placeholder="Buscar município..." autocomplete="off"/>
+                    <input id="city-search" type="search" placeholder="Busque por cidade, UF ou nome sem acentos..." autocomplete="off"/>
                 </div>
+                <p id="city-search-feedback" class="city-search-feedback" role="status">Busque em todas as UFs, sem selecionar estado.</p>
                 <div class="table-scroll">
                     <table><thead><tr><th>MUNICÍPIO</th><th>VOTOS VÁLIDOS</th><th>MAIS VOTADO</th><th>PARTICIPAÇÃO DOS VÁLIDOS</th></tr></thead>
                     <tbody id="city-rows"><tr><td colspan="4" class="empty-table">Selecione uma UF para visualizar seus municípios.</td></tr></tbody></table>

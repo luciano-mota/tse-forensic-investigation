@@ -1,0 +1,42 @@
+name: E2E mapa e busca municipal
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "src/main/resources/static/**"
+      - "tests/map-browser.smoke.mjs"
+      - ".github/workflows/map-e2e.yml"
+  push:
+    branches: [main]
+    paths:
+      - "src/main/resources/static/**"
+      - "tests/map-browser.smoke.mjs"
+      - ".github/workflows/map-e2e.yml"
+permissions:
+  contents: read
+jobs:
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install headless Chromium automation
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test actual browser clicks, map zoom, city search and responsive layouts
+        run: |
+          python3 -m http.server 8765 --bind 127.0.0.1 --directory src/main/resources/static > /tmp/tse-map-http.log 2>&1 &
+          sleep 2
+          node tests/map-browser.smoke.mjs
+      - name: Upload map screenshots for UX review
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: brazil-map-ux-screenshots
+          path: map-test-artifacts/
+          retention-days: 10
+          if-no-files-found: warn
