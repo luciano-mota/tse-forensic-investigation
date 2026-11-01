@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Arrays;
+import org.apache.pdfbox.pdmodel.PDPage;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -69,7 +70,8 @@ class ElectionPdfReportServiceTest {
             assertTrue(contents.contains("10%"));
             assertTrue(contents.contains("10 p.p."));
             assertTrue(contents.contains("NÃO DETERMINADA"));
-            int links=pdf.getPages().stream().mapToInt(page->page.getAnnotations().size()).sum();
+            int links=0;
+            for (PDPage page: pdf.getPages()) links+=page.getAnnotations().size();
             assertTrue(links >= 4);
         }
     }
