@@ -1,0 +1,62 @@
+name: Verificar atlas e PDFs publicados no Render
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "43 9 * * *"
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/production-smoke.yml
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install PDF inspection and raster tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+      - name: Check health, bundled map and official source monitor
+        run: |
+          set -euo pipefail
+          BASE=https://tse-forensic-investigation.onrender.com
+          curl -fsSL --retry 6 --retry-all-errors --retry-delay 8 --max-time 120 "$BASE/actuator/health" -o /tmp/health.json
+          python -c 'import json; d=json.load(open("/tmp/health.json")); assert d.get("status") == "UP",d'
+          curl -fsSL --retry 3 --max-time 60 "$BASE/" -o /tmp/index.html
+          grep -q 'id="report-pdf"' /tmp/index.html
+          grep -q 'id="map-zoom-in"' /tmp/index.html
+          curl -fsSL --retry 3 --max-time 60 "$BASE/geo/estados.geojson" -o /tmp/estados.geojson
+          python -c 'import json; d=json.load(open("/tmp/estados.geojson")); assert len(d["features"]) == 27'
+          curl -fsSL --retry 3 --max-time 60 "$BASE/api/v1/live/status" -o /tmp/status.json
+          python -c 'import json; d=json.load(open("/tmp/status.json")); assert d.get("status") in ("OK","STALE","DEGRADED"),d'
+      - name: Obtain real reports and inspect their pages and references
+        run: |
+          set -euo pipefail
+          BASE=https://tse-forensic-investigation.onrender.com
+          mkdir -p production-samples
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 9 --max-time 150 "$BASE/api/v1/reports/presidential-2026.pdf" -o production-samples/brasil.pdf
+          curl -fsSL --retry 5 --retry-all-errors --retry-delay 9 --max-time 150 "$BASE/api/v1/reports/presidential-2026.pdf?uf=MA" -o production-samples/maranhao.pdf
+          pdfinfo production-samples/brasil.pdf | tee /tmp/brasil-info.txt
+          pdfinfo production-samples/maranhao.pdf | tee /tmp/maranhao-info.txt
+          pdftotext -layout production-samples/brasil.pdf /tmp/brasil.txt
+          pdftotext -layout production-samples/maranhao.pdf /tmp/maranhao.txt
+          grep -qi 'TSE FORENSIC' /tmp/brasil.txt
+          grep -qi 'SHA-256' /tmp/brasil.txt
+          grep -qi 'JURÍDICO\|JURIDICO\|Código Eleitoral\|CODIGO ELEITORAL' /tmp/brasil.txt
+          grep -qi 'Maranh' /tmp/maranhao.txt
+          grep -qi 'CONCLUSÃO\|CONCLUSAO\|INTERPRETAÇÃO\|INTERPRETACAO' /tmp/maranhao.txt
+          python -c 'from pathlib import Path; assert Path("production-samples/brasil.pdf").stat().st_size > 15000'
+          pdftoppm -f 1 -l 2 -scale-to 1300 -png production-samples/brasil.pdf production-samples/brasil-page >/dev/null 2>&1
+          pdftoppm -f 1 -l 2 -scale-to 1300 -png production-samples/maranhao.pdf production-samples/maranhao-page >/dev/null 2>&1
+          ls -lh production-samples
+      - name: Upload PDF examples and page previews for design validation
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: forensic-pdf-production-check
+          path: production-samples/
+          retention-days: 7
+          if-no-files-found: warn
