@@ -359,3 +359,93 @@ footer span{color:#8bbab7}
 @media(max-width:650px){.source-signal{grid-template-columns:1fr 1fr;gap:18px 12px;margin-bottom:28px}
  .signal-part:nth-child(2){border-right:0}.signal-part:nth-child(3){grid-column:1/-1}
  .signal-part strong{font-size:13px}}
+
+
+/* Territorial atlas: self-hosted geometry and navigation, no dependency on IBGE web API. */
+.map-area{position:relative;isolation:isolate}
+.map-canvas{position:relative;touch-action:none;user-select:none;overflow:hidden;cursor:grab;min-height:400px}
+.map-canvas:active{cursor:grabbing}
+.map-canvas svg{width:100%;height:100%;display:block;touch-action:none}
+.map-canvas .map-land{transform-origin:0 0;will-change:transform}
+.map-path{vector-effect:non-scaling-stroke;stroke:#081920;stroke-width:.72;transition:fill .18s,filter .18s;cursor:pointer}
+.map-path:hover,.map-path:focus-visible{stroke:#f4fffa;stroke-width:1.8;filter:brightness(1.3);outline:none}
+.map-path.is-selected{stroke:#fff;stroke-width:2;filter:brightness(1.15)}
+.map-municipality{stroke-width:.28;stroke:#0d2730}
+.map-navigation{display:flex;align-items:center;gap:5px;position:absolute;right:10px;top:35px;z-index:5;
+ border:1px solid rgba(137,213,221,.3);padding:5px;background:rgba(6,19,27,.9);
+ backdrop-filter:blur(6px);border-radius:4px}
+.map-navigation button{border:1px solid rgba(138,195,205,.25);background:#142a36;color:#b3edf0;
+ min-width:31px;height:32px;border-radius:2px;padding:0 8px;font:700 17px var(--mono)}
+.map-navigation button:hover{background:#23546a}
+.map-navigation #map-reset{font-size:11px}
+.map-navigation output{color:#83acbb;font:10px var(--mono);margin:0 7px;min-width:45px;text-align:center}
+.map-topline #map-trail{color:#a6d7d8;overflow-wrap:anywhere}
+.map-tooltip{max-width:260px;white-space:normal;pointer-events:none}
+.legend-dot.a{background:#df4557}.legend-dot.b{background:#368dd7}
+.candidate{--party-color:#829fb0}
+.candidate-name{display:flex;align-items:center;gap:13px}
+.candidate-title{display:grid;gap:5px;min-width:0}
+.candidate-title strong{display:block;font-size:13px;line-height:1.35;font-weight:650;color:#e4f4f5}
+.candidate-title small{font:10px var(--mono);color:#9ab4c0}
+.candidate-photo-frame{display:grid;place-items:center;position:relative;width:48px;height:54px;flex-shrink:0;
+ overflow:hidden;border:2px solid var(--party-color);background:#152b38;border-radius:4px}
+.candidate-photo-fallback{position:absolute;inset:0;display:grid;place-items:center;color:#e6fcfc;
+ font:600 17px var(--display)}
+.candidate-photo{position:absolute;inset:0;z-index:1;width:100%;height:100%;object-fit:cover;
+ background:#142a36}
+.candidate .bar-track{height:5px}
+.candidate-credits{font:9px/1.55 var(--mono);color:#577483;margin-top:13px}
+.analysis-chapter{padding:85px 0 100px;border-top:1px solid var(--line-bold);
+ display:grid;grid-template-columns:minmax(200px,.75fr) minmax(0,1.45fr);
+ gap:clamp(38px,5vw,98px)}
+.analysis-side{align-self:start;position:sticky;top:28px}
+.analysis-side h2{font:500 clamp(36px,4.25vw,67px)/1.12 var(--display);letter-spacing:-.065em;
+ margin:20px 0 25px}
+.analysis-side h2 em{color:#96e8df;font-style:normal}
+.analysis-side p{max-width:335px;color:#a0b7c0;font-size:14px;line-height:1.85}
+.analysis-side .analysis-side-note{font-size:12px;color:#7595a4;line-height:1.9;border-left:1px solid #699ca6;padding-left:16px;margin-top:33px}
+.analysis-main{min-width:0}
+.analysis-status{font:700 10px/1.5 var(--mono);letter-spacing:1.3px;color:#83d4d2;padding:18px 0;
+ border-top:1px solid var(--line-bold);border-bottom:1px solid var(--line)}
+.analysis-story{padding:26px 0 42px}
+.analysis-story h3{font:500 clamp(27px,3vw,44px)/1.15 var(--display);letter-spacing:-1.5px;margin:0 0 17px}
+.analysis-lead{font-size:15px;line-height:1.9;color:#bad7dc;border-left:2px solid var(--accent);
+ padding-left:20px;margin:18px 0 30px}
+.analysis-findings{list-style:none;padding:0;margin:0;counter-reset:reading}
+.analysis-findings li{counter-increment:reading;border-top:1px solid var(--line);padding:16px 0 16px 43px;
+ position:relative;color:#a2bbc4;font-size:13px;line-height:1.85}
+.analysis-findings li:before{content:counter(reading,decimal-leading-zero);position:absolute;left:0;top:17px;
+ font:700 10px var(--mono);color:#67b9bb}
+.analysis-formula-section,.analysis-integrity{padding:28px 0;border-top:1px solid var(--line-bold)}
+.analysis-main h4{font:500 22px var(--display);margin:0 0 22px;letter-spacing:-.7px;color:#d8f0f1}
+.analysis-formula{display:block;font:10px/1.7 var(--mono);color:#7396a5;margin-top:7px}
+.analysis-expression{font:11px/1.7 var(--mono);color:#89a9b6}
+.analysis-result{color:#a5e1da;font:600 11px var(--mono);white-space:nowrap}
+.evidence-observation{border-top:1px solid var(--line);padding:17px 0}
+.evidence-observation strong{font:700 12px var(--mono);color:#99d9d5}
+.evidence-observation.evidence-warning strong{color:#e4c08b}
+.evidence-observation p,.analysis-integrity>p{color:#92afba;line-height:1.8;font-size:12px;margin:8px 0}
+.analysis-caution{border-left:2px solid #d8b07e;padding:12px 0 12px 18px}
+.analysis-method{margin-top:20px;border-top:1px solid var(--line-bold);padding:21px 0;
+ font-size:12px;color:#a7c2cc;line-height:1.9}
+.analysis-method summary{cursor:pointer;color:#9fe4de;font:700 12px var(--mono);
+ padding:6px 0}
+.analysis-method p{overflow-wrap:anywhere}
+.analysis-method code{overflow-wrap:anywhere;font-size:10px;color:#a5ded6}
+.analysis-method ul{list-style:none;margin:16px 0;padding:0}
+.analysis-method li{padding:13px 0;border-top:1px solid var(--line);word-break:break-word}
+.analysis-method li a{display:block;color:#a7e4e0;margin-bottom:5px}
+.analysis-method li code{display:block}
+@media(max-width:1020px){.analysis-chapter{grid-template-columns:1fr;gap:25px}
+ .analysis-side{position:static}.analysis-side h2 br{display:none}
+ .analysis-side p{max-width:780px}}
+@media(max-width:650px){.map-canvas{min-height:305px;height:340px}
+ .map-navigation{top:32px;right:0;gap:3px}
+ .map-navigation button{min-width:28px;height:30px}
+ .map-navigation output{font-size:9px}
+ .candidate-photo-frame{width:43px;height:50px}
+ .analysis-chapter{padding:60px 0 65px}
+ .analysis-side h2{font-size:43px}
+ .analysis-story h3{font-size:29px}
+ .analysis-formula-section th,.analysis-formula-section td{min-width:130px;font-size:11px}
+ .analysis-formula-section td{white-space:normal}}
