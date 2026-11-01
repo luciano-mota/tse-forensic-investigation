@@ -29,4 +29,4 @@ jobs:
           node --check src/main/resources/static/atlas-map.js
           node --check src/main/resources/static/analysis.js
       - name: Test source-grounded geographic analysis
-        run: node --test tests/analysis.test.mjs
+        run: node --test tests/analysis.test.mjs tests/atlas-map.test.mjs
