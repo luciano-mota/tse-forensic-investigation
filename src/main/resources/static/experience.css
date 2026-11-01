@@ -461,3 +461,41 @@ footer span{color:#8bbab7}
 .report-pdf-download small{display:block;color:#83aeb5;font:9px/1.75 var(--mono);letter-spacing:.2px;margin-top:3px}
 .report-pdf-download[hidden]{display:none}
 @media(max-width:650px){.report-pdf-download{width:100%;justify-content:center}}
+
+
+/* Atlas v2 — map is the primary information surface, not an inset panel. */
+@media (min-width:1021px) {
+  .atlas-stage {grid-template-columns:minmax(0,2.25fr) minmax(295px,.85fr);min-height:735px}
+  .atlas-stage .map-panel {padding:32px 20px 35px}
+  .atlas-stage .results-panel {padding:32px 22px}
+  .map-canvas {height:630px;min-height:630px}
+  .map-area {min-height:680px}
+  .atlas-stage .candidate-results {margin-top:15px}
+}
+.map-canvas {background:radial-gradient(ellipse at 50% 45%,rgba(38,87,107,.10),transparent 75%);isolation:isolate}
+.map-canvas svg {max-width:none;shape-rendering:geometricPrecision;overflow:visible}
+.map-path {stroke-linejoin:round;stroke-linecap:round}
+.map-state {stroke:#0a2730;stroke-width:1.2}
+.map-municipality {stroke:#071720;stroke-width:.48}
+.map-path.is-selected {stroke:#f0fffd;stroke-width:2.2}
+.map-path:hover {filter:brightness(1.38);stroke:#e0ffff}
+.atlas-coordinate {display:none}
+.map-topline {gap:12px;flex-wrap:wrap}
+.city-search-feedback {margin:4px 0 14px;font:11px/1.5 var(--mono);color:#80a9b4;min-height:17px}
+.municipality-uf {display:block;font:10px/1.5 var(--mono);color:#85c9d1;margin-top:3px}
+#city-rows tr[data-municipality] {cursor:pointer}
+#city-rows tr[data-municipality]:focus-visible {outline:2px solid var(--accent);outline-offset:-2px;background:rgba(104,206,211,.1)}
+#city-search {flex:1;min-width:185px;width:min(100%,360px)}
+.map-tooltip {box-shadow:0 14px 38px rgba(0,0,0,.5);z-index:6}
+@media (max-width:1020px) and (min-width:651px){
+  .atlas-stage {grid-template-columns:1fr}
+  .atlas-stage .map-panel {padding:24px}
+  .map-canvas {height:570px;min-height:570px}
+}
+@media (max-width:650px){
+  .atlas-stage .map-panel {padding:20px 10px 30px}
+  .map-canvas {height:400px;min-height:400px}
+  .map-navigation {top:42px}
+  .map-topline {font-size:9px;line-height:1.6}
+  #city-search {width:100%}
+}
