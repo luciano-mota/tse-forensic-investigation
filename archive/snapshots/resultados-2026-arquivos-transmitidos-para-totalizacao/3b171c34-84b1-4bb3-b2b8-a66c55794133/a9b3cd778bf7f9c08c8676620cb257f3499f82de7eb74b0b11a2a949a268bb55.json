@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "3b171c34-84b1-4bb3-b2b8-a66c55794133",
+  "dataset": "resultados-2026-arquivos-transmitidos-para-totalizacao",
+  "metadata_sha256": "05ac881789e33003ebb70a08c878e922bc3ff1dfb8742ac0bb317fdfb7c1e961",
+  "resource": {
+    "id": "3b171c34-84b1-4bb3-b2b8-a66c55794133",
+    "name": "MT - Arquivos transmitidos para totalização - Primeiro turno",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/arqurnatot/bu_imgbu_logjez_rdv_vscmr_2026_1t_MT.zip",
+    "format": "ZIP",
+    "size": null,
+    "created": "2026-10-06T18:17:41.506327",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T18:17:50.864023",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-arquivos-transmitidos-para-totalizacao"
+  }
+}

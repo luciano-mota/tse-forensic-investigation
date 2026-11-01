@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "e10cc9a5-37bf-43ac-aab8-6af387efcb36",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "92bf1a0cd6462fd524dae3756b9ec4925f865eeb827d0b10b5ef03fed74b3a6d",
+  "resource": {
+    "id": "e10cc9a5-37bf-43ac-aab8-6af387efcb36",
+    "name": "MG - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_MG.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T17:47:32.718218",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T17:48:01.393651",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

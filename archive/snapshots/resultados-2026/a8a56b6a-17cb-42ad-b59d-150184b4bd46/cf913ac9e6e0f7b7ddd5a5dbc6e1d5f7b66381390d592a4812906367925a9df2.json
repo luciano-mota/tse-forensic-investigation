@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "a8a56b6a-17cb-42ad-b59d-150184b4bd46",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "d501dd02c441d71283c36e8b785100c51e96d4f424c5178453dd179fd8860afc",
+  "resource": {
+    "id": "a8a56b6a-17cb-42ad-b59d-150184b4bd46",
+    "name": "SC - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_SC.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:43:38.604244",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:48:48.071558",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

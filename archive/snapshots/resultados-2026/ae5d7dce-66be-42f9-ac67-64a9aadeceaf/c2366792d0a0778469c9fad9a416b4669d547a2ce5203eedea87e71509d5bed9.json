@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "ae5d7dce-66be-42f9-ac67-64a9aadeceaf",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "0371311338d15fa52a9a512173c724e12501ebfb5ca8e99154056ad89bd86fa4",
+  "resource": {
+    "id": "ae5d7dce-66be-42f9-ac67-64a9aadeceaf",
+    "name": "CE - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_CE.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:30:57.766088",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:48:21.131524",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

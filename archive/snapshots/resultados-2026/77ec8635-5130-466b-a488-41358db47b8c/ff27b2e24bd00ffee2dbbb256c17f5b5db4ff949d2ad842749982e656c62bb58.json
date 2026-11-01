@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "77ec8635-5130-466b-a488-41358db47b8c",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "5347b50d1b36538d7a174df624186b958f976de21660fbd115f5dc2a40f43fa3",
+  "resource": {
+    "id": "77ec8635-5130-466b-a488-41358db47b8c",
+    "name": "MT - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_MT.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:35:07.463736",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:49:24.635347",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

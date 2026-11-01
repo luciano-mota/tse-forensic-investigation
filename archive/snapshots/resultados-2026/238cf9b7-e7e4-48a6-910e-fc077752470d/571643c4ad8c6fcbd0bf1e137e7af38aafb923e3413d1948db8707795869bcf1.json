@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "238cf9b7-e7e4-48a6-910e-fc077752470d",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "ffd242d02368599b2032e709a1a2d60fc91149ca3f760c511820dc70a79abb85",
+  "resource": {
+    "id": "238cf9b7-e7e4-48a6-910e-fc077752470d",
+    "name": "PA - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_PA.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T17:49:30.269028",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T17:49:59.068272",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

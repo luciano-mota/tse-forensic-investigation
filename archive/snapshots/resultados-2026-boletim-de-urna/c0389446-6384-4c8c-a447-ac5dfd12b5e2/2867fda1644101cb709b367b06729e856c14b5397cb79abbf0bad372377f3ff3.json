@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "c0389446-6384-4c8c-a447-ac5dfd12b5e2",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "3b146d6551361a4c356defa9a68c83d3c5b3da793bf37f59dc2ddf5930b66fa9",
+  "resource": {
+    "id": "c0389446-6384-4c8c-a447-ac5dfd12b5e2",
+    "name": "MG - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_MG_051020261403.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-06T18:34:01.865657",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T19:52:55.855360",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

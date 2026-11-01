@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "a2018ffc-58ce-4dd1-848a-9ef09b20dc91",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "7bba28d65778f579c4fe4c6e775d27dd104eb578e4ee9f4eccfae3acb8403258",
+  "resource": {
+    "id": "a2018ffc-58ce-4dd1-848a-9ef09b20dc91",
+    "name": "PR - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_PR.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:37:57.417763",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:50:15.975523",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

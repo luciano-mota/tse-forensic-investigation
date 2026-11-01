@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "5bead165-baa9-448c-9d7e-3c229c7f3c47",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "3365df4fa3ee714a20219fe6bf9b0d19c6d7d1b619905c6d7dac447e88892532",
+  "resource": {
+    "id": "5bead165-baa9-448c-9d7e-3c229c7f3c47",
+    "name": "MA - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_MA.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:33:27.376042",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:48:55.333579",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

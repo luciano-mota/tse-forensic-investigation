@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "71a09425-4da0-465a-9320-9f7c5ad1820b",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "d06cef38411ed40afa263471ac8a30b3efe7a481d72a3553557272dc72ea9c27",
+  "resource": {
+    "id": "71a09425-4da0-465a-9320-9f7c5ad1820b",
+    "name": "DF - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_DF.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:31:41.538690",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:48:29.522518",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "32892c16-6a45-436e-a2d1-0809c31f3898",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "92cce13fbcbdd9ddf5c08d56ebd1a97d3d8fd8f3c6f5eefdce5de3e5ef1b84b3",
+  "resource": {
+    "id": "32892c16-6a45-436e-a2d1-0809c31f3898",
+    "name": "Detalhe da apuração por seção eleitoral",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_secao/detalhe_votacao_secao_2026.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:24:27.684990",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T12:26:18.786994",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

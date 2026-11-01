@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "19355892-1025-48e1-9cbf-4fa100f9eb25",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "66404dbad1a22af7dde9e65998c318279b4482b788a73a06ca10af8eb5c7ecef",
+  "resource": {
+    "id": "19355892-1025-48e1-9cbf-4fa100f9eb25",
+    "name": "PE - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_PE.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:36:56.834059",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:49:56.921975",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

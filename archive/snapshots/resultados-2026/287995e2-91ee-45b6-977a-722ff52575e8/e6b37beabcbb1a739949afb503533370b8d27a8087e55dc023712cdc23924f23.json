@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "287995e2-91ee-45b6-977a-722ff52575e8",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "423499de8bb131de9f05636c1e9bc3fb61faecd71ee7749bfde014268c552693",
+  "resource": {
+    "id": "287995e2-91ee-45b6-977a-722ff52575e8",
+    "name": "AC - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_AC.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:27:44.897998",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:47:41.892132",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "30378d01-7c4a-43a8-84c8-4fc7499a9efe",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "7bbb297e8293fd5d5a894c578ae933e23768107278ab38e4ca55298a084b0872",
+  "resource": {
+    "id": "30378d01-7c4a-43a8-84c8-4fc7499a9efe",
+    "name": "SP - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_SP.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:44:48.314125",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:47:56.302667",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

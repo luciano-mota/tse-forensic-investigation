@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "c9d6684b-30dc-4603-bc5d-c03daac4aa8d",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "15f8df6243c7481ce9cd74591bbe9722da388e91b51dcc3afbcf9fb44fa1f7bb",
+  "resource": {
+    "id": "c9d6684b-30dc-4603-bc5d-c03daac4aa8d",
+    "name": "SC - Hash SHA2 - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_SC_051020261403.zip.sha512",
+    "format": "",
+    "size": null,
+    "created": "2026-10-06T18:40:57.967964",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T20:02:36.604570",
+    "hash": "",
+    "mimetype": null,
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

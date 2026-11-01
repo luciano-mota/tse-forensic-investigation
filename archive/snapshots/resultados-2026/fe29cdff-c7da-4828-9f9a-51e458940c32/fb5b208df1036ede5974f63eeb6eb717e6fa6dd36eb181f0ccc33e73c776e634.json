@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "fe29cdff-c7da-4828-9f9a-51e458940c32",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "6377ff4b5715389319de4b6954f20cc983d4a45cc61bd18c1947ff220a88fc02",
+  "resource": {
+    "id": "fe29cdff-c7da-4828-9f9a-51e458940c32",
+    "name": "SP - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_SP.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T17:59:52.532066",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T18:00:29.140477",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

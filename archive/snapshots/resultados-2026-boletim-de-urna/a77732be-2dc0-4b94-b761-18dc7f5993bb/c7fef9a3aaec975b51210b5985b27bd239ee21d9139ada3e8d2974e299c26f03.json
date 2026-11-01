@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "a77732be-2dc0-4b94-b761-18dc7f5993bb",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "afd46c708a48bcfffbb191e9655892edd5cfe99f823766dec81b48462acf3b82",
+  "resource": {
+    "id": "a77732be-2dc0-4b94-b761-18dc7f5993bb",
+    "name": "MA - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_MA_051020261403.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-06T18:33:35.814229",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T19:52:39.494266",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

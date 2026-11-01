@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "c807b826-21ff-4bcf-97ca-d86482656320",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "15744e8e18ee0e46aa1de5fc3ded74521c12681045c5ff7379e0e48ef6c3cbfd",
+  "resource": {
+    "id": "c807b826-21ff-4bcf-97ca-d86482656320",
+    "name": "Votação nominal por município e zona",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-07T14:34:55.786681",
+    "last_modified": null,
+    "metadata_modified": "2026-10-07T14:35:28.459900",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

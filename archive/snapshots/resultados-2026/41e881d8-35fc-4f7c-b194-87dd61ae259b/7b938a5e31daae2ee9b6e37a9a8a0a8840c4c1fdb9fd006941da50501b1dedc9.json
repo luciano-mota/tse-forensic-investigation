@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "41e881d8-35fc-4f7c-b194-87dd61ae259b",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "7b10a8daa69da121d5bcf3250dee4980aaae1675205ac2be6fed1c14d166a9bf",
+  "resource": {
+    "id": "41e881d8-35fc-4f7c-b194-87dd61ae259b",
+    "name": "RN - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_RN.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:39:20.163916",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:50:21.629153",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "4050dd5e-2d2c-42af-acb8-4d9d1b2dc9ff",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "03c6da6ec869407c5cc9d43dde58fcda619f09255e786c7ea72a6beb94515fcb",
+  "resource": {
+    "id": "4050dd5e-2d2c-42af-acb8-4d9d1b2dc9ff",
+    "name": "RJ - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_RJ.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T17:53:30.569750",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T17:54:41.806144",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "7c3162aa-a5ad-452a-91a6-04d63e7042d5",
+  "dataset": "resultados-2026-arquivos-transmitidos-para-totalizacao",
+  "metadata_sha256": "e67ae6355642e9d28b60db0e93037b1515521ab3e448e39f3e903b744ecfad41",
+  "resource": {
+    "id": "7c3162aa-a5ad-452a-91a6-04d63e7042d5",
+    "name": "SE - Arquivos transmitidos para totalização - Segundo turno",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/arqurnatot/bu_imgbu_logjez_rdv_vscmr_2026_2t_SE.zip",
+    "format": "ZIP",
+    "size": null,
+    "created": "2026-10-28T14:11:07.390403",
+    "last_modified": null,
+    "metadata_modified": "2026-10-28T14:11:13.486556",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-arquivos-transmitidos-para-totalizacao"
+  }
+}

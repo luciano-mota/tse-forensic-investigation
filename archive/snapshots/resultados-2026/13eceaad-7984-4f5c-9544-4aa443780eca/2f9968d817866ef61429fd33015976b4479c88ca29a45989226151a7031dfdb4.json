@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "13eceaad-7984-4f5c-9544-4aa443780eca",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "1cb01d6e6a36b85436ed2af480fcfd8f6905914ef15c4126752243413969e4b8",
+  "resource": {
+    "id": "13eceaad-7984-4f5c-9544-4aa443780eca",
+    "name": "PA - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_PA.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:35:45.096303",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:49:36.119873",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

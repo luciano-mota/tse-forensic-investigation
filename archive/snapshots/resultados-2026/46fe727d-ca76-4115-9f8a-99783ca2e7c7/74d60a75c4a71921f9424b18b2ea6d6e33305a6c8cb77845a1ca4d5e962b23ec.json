@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "46fe727d-ca76-4115-9f8a-99783ca2e7c7",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "de396d39eda6427b80e9aef4876b0e3f8a52a236b75b031e2bec1eaff4a2b281",
+  "resource": {
+    "id": "46fe727d-ca76-4115-9f8a-99783ca2e7c7",
+    "name": "BA - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_BA.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T17:44:41.063495",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T17:45:10.295387",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "60fb75b0-1f32-4278-8f75-e8b6da274581",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "1a48b19702572557678ae5376f2fd9d7c8dfae45323ed96e5d47e01632164638",
+  "resource": {
+    "id": "60fb75b0-1f32-4278-8f75-e8b6da274581",
+    "name": "PI - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_PI.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:37:26.583107",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:50:06.494119",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

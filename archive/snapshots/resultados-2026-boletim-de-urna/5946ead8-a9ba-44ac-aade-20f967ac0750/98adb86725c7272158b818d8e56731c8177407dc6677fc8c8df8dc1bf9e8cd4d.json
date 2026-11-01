@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "5946ead8-a9ba-44ac-aade-20f967ac0750",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "610aa5baec50c75a115cc42609bab0943b1b8067f3c0e251e1e66c8a01b3090a",
+  "resource": {
+    "id": "5946ead8-a9ba-44ac-aade-20f967ac0750",
+    "name": "PR - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_PR_051020261403.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-06T18:38:24.727353",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T19:56:33.513177",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

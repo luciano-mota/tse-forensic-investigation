@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "b3d641b5-be8a-4a95-a8bf-9792ec9fdf9e",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "0a1fb204eb29eef16cd2dc71ad507d15400c25fdf43f3d1b936a17c8fd31c38e",
+  "resource": {
+    "id": "b3d641b5-be8a-4a95-a8bf-9792ec9fdf9e",
+    "name": "PB - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_PB.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:36:20.805903",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:49:47.547106",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

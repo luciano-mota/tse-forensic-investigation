@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "e946ee05-6677-40d6-8a8c-a46f93487227",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "955d50c3348f2202953ec8111bafbab308c87adff4e05ce566e346ca82468e7c",
+  "resource": {
+    "id": "e946ee05-6677-40d6-8a8c-a46f93487227",
+    "name": "SC - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_SC.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T17:57:54.621598",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T17:58:32.356467",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "2aaa40ff-70d2-43f3-ad0f-9a0318ade46c",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "21a01a7f09d7aa153be737f24d574f18e52cb101fd83983b149e4022677b449d",
+  "resource": {
+    "id": "2aaa40ff-70d2-43f3-ad0f-9a0318ade46c",
+    "name": "MG - Votação por seção eleitoral - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_secao/votacao_secao_2026_MG.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-08T12:34:08.768550",
+    "last_modified": null,
+    "metadata_modified": "2026-10-08T13:49:04.426084",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

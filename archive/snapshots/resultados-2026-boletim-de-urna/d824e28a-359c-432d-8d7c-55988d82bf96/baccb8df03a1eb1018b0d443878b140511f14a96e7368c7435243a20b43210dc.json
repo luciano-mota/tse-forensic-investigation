@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "d824e28a-359c-432d-8d7c-55988d82bf96",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "a3cfa05230493b89b6ec6acf9540ef77913823170ed46107aa8692c7a5c5e8ca",
+  "resource": {
+    "id": "d824e28a-359c-432d-8d7c-55988d82bf96",
+    "name": "RJ - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_RJ_051020261403.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-06T18:38:49.495734",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T19:58:18.970671",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

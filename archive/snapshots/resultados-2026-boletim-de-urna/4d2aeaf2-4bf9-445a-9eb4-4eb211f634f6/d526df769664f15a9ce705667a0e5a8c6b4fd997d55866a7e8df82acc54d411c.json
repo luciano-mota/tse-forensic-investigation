@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "4d2aeaf2-4bf9-445a-9eb4-4eb211f634f6",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "60470aae418314ff8ee57e578cc4b9adaff9e8ae9ce1163c9fb81b9f8c304490",
+  "resource": {
+    "id": "4d2aeaf2-4bf9-445a-9eb4-4eb211f634f6",
+    "name": "PA - Boletim de Urna - Segundo turno - 26.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_2t_PA_261020260742.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-27T19:06:29.738032",
+    "last_modified": null,
+    "metadata_modified": "2026-10-27T19:06:40.116419",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

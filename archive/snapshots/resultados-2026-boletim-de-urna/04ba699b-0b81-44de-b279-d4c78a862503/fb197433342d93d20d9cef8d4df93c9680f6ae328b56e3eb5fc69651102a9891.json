@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "04ba699b-0b81-44de-b279-d4c78a862503",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "8b09acba4ce7ccc6e421ef2a0b06085ad94c8e899d41f8d0c1e45d15ea202249",
+  "resource": {
+    "id": "04ba699b-0b81-44de-b279-d4c78a862503",
+    "name": "CE - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_CE_051020261403.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-06T18:32:00.358958",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T19:51:18.307487",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "db2f6a49-a150-42a5-9aca-9ddd16d297f0",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "cc5b799ded192ac6fc09b9ee5814693909d7170d39a017185a9671acbbb94ddd",
+  "resource": {
+    "id": "db2f6a49-a150-42a5-9aca-9ddd16d297f0",
+    "name": "Detalhe da apuração por município e zona",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-07T14:35:56.681721",
+    "last_modified": null,
+    "metadata_modified": "2026-10-07T14:37:12.428628",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

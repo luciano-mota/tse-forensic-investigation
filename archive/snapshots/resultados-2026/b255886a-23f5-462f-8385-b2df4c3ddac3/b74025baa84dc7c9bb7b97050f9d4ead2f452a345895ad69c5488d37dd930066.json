@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "b255886a-23f5-462f-8385-b2df4c3ddac3",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "97838686c7ca577deefaf89e5451a873405b77f18cf702093ff7b4e9d9862481",
+  "resource": {
+    "id": "b255886a-23f5-462f-8385-b2df4c3ddac3",
+    "name": "Votação em partido por município e zona ",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_partido_munzona/votacao_partido_munzona_2026.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-07T14:35:28.475704",
+    "last_modified": null,
+    "metadata_modified": "2026-10-07T14:35:56.666627",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

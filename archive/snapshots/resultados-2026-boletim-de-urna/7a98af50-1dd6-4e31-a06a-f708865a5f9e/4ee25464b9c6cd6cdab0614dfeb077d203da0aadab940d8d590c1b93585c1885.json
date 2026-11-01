@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "7a98af50-1dd6-4e31-a06a-f708865a5f9e",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "cf40bb2fb70af9ddf2a6284ed837a65a615f18e0e55c821ce472432a477ab5ce",
+  "resource": {
+    "id": "7a98af50-1dd6-4e31-a06a-f708865a5f9e",
+    "name": "MT - Hash SHA2 - Segundo turno - 26.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_2t_MT_261020260742.zip.sha512",
+    "format": "",
+    "size": null,
+    "created": "2026-10-27T19:06:14.209525",
+    "last_modified": null,
+    "metadata_modified": "2026-10-27T19:06:29.719591",
+    "hash": "",
+    "mimetype": null,
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}

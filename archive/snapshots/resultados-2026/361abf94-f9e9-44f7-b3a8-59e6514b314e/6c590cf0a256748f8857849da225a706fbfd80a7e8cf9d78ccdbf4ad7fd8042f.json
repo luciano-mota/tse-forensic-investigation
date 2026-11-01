@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "361abf94-f9e9-44f7-b3a8-59e6514b314e",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "462af1e705e472e133a9c014b2c79c6a774a708ac8e987226fc8bc83e7c81e03",
+  "resource": {
+    "id": "361abf94-f9e9-44f7-b3a8-59e6514b314e",
+    "name": "BR - Relatório de Totalização - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/relatorio_resultado_totalizacao/Relatorio_Resultado_Totalizacao_2026_BR.zip",
+    "format": "PDF",
+    "size": null,
+    "created": "2026-10-06T18:01:10.609642",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T18:01:11.683341",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

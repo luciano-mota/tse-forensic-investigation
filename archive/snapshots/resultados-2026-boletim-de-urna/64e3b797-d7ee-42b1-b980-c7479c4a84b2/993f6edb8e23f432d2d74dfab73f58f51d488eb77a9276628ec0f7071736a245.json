@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-01T04:25:12Z",
+  "resource_id": "64e3b797-d7ee-42b1-b980-c7479c4a84b2",
+  "dataset": "resultados-2026-boletim-de-urna",
+  "metadata_sha256": "fd82a15df8d19e553c0a36888f81249e3ce111373854ba60b712a69f05fda211",
+  "resource": {
+    "id": "64e3b797-d7ee-42b1-b980-c7479c4a84b2",
+    "name": "AL - Boletim de Urna - Primeiro turno - 05.10.2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/buweb/bweb_1t_AL_051020261403.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-10-06T18:30:22.726200",
+    "last_modified": null,
+    "metadata_modified": "2026-10-06T19:49:33.099984",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026-boletim-de-urna"
+  }
+}
