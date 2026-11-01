@@ -96,3 +96,25 @@ src/main/resources
 A API apenas lê dados publicamente; operações de importação são administrativas/offline. A aplicação não possui credenciais do TSE e não acessa sistemas restritos.
 
 Consulte [protocolo de auditoria](docs/INVESTIGATION_PROTOCOL.md) e [backlog técnico](docs/ROADMAP.md).
+
+## Auditorias por seção — incremento 2
+
+Novas tabelas: `section_turnout`, `section_biometric`, `section_vote`.
+- **Comparecimento:** `FORENSIC_TURNOUT_PATH=/dados/detalhe_votacao_secao_2026.zip`.
+  Importa por seção os campos `NR_TURNO, SG_UF, CD_MUNICIPIO, NM_MUNICIPIO, NR_ZONA, NR_SECAO, CD_CARGO, QT_APTOS, QT_COMPARECIMENTO, QT_ABSTENCOES` somente para Presidente.
+- **Votos por seção:** `FORENSIC_SECTION_VOTES_PATH=/dados/votacao_secao_2026.zip` para conferir `votos válidos <= comparecimento` por seção. Esse teste NÃO é recontagem por RDV ou comparação BU digital.
+- **Biometria derivada:** `FORENSIC_BIOMETRIC_PATH=/dados/biometria_agregada_validada.csv`. Este é um formato *normalizado derivado de logs*, **não** um CSV oficial fornecido diretamente pelo TSE. Só importe após documentar a extração e auditar a contagem dos eventos. Cabeçalho esperado: `NR_TURNO;SG_UF;CD_MUNICIPIO;NR_ZONA;NR_SECAO;QT_BIOMETRIA_RECONHECIDA;QT_SEM_CADASTRO_BIOMETRICO;QT_BIOMETRIA_FALHOU;QT_LIBERACOES_MESARIO`; a última coluna é opcional.
+- Todos os arquivos devem conter snapshots completos por UF/turno; uma nova importação substitui aquele escopo, por transação.
+- **Nenhum dos novos módulos afirma identificar o eleitor ou o voto individual; o sigilo do voto permanece protegido.**
+
+**Novas rotas**: `GET /api/v1/audits/turnout`, `/turnout/comparison`, `/turnout/sections?uf=MA&round=2&limit=100&offset=0`, `/biometrics`, `/biometrics/comparison`, `/sections/reconciliation?uf=MA`.
+
+**Render:** serviço web pode usar banco H2 efêmero apenas para exibir a interface vazia (sem dados); para ingerir e publicar resultados, configure as variáveis privadas `JDBC_DATABASE_URL`, `DB_USER` e `DB_PASSWORD` com o PostgreSQL persistente. Não use H2 para produzir relatórios probatórios.
+
+### BWEB oficial: não reconhecimento biométrico
+
+A variável `FORENSIC_BWEB_PATH=/dados/bweb_2t_2026_MA.zip` importa o BWEB de origem oficial, com `QT_ELEI_BIOM_SEM_HABILITACAO`, `QT_COMPARECIMENTO` e chaves UF/município/zona/seção/turno. Um arquivo deve cobrir integralmente cada par UF/turno que contém; importações substituem o mesmo escopo.
+
+A taxa calculada é **falha de habilitação biométrica em eleitor com biometria cadastrada / comparecimento**, não o total de votantes sem biometria. O BWEB não fornece evidência de assinatura manuscrita individual nem associação do voto a um eleitor.
+
+Endpoints `GET /api/v1/audits/biometrics/bweb?round=2&uf=MA` e `GET /api/v1/audits/biometrics/bweb/comparison?uf=MA&municipalityCode=...`.

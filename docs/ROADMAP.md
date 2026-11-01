@@ -29,3 +29,14 @@
 - [ ] Revisão de segurança, performance em milhões de linhas e proteção contra consumo excessivo de recursos.
 
 Critério de entrega dos itens futuros: testes determinísticos + documentos de fonte + revisão humana + limites explícitos no painel.
+
+## Incremento 2 — comparecimento e identificação eleitoral
+- [x] Persistência por seção de aptos, comparecimento e abstenções e comparação de turnos
+- [x] Modelo de agregados de eventos biométricos por seção e API de comparação (entrada derivada; parser direto de logs ainda pendente)
+- [x] Importador por seção de voto nominal/BU CSV para detecção preliminar de votos válidos acima do comparecimento
+- [x] Dashboard de abstenção e biometria com estados explícitos para dados faltantes
+- [x] Ingestão nativa de indicador BWEB `QT_ELEI_BIOM_SEM_HABILITACAO` por seção e comparação entre turnos
+- [ ] Interpretar diretamente logs oficiais (`.logjez`/`.log`) e validar a semântica de eventos, contingências e substituições de urnas
+- [ ] Recontagem RDV e confronto criptográfico com BU original
+- [ ] Comparação entre registros da mesa e logs agregados mediante procedimentos legais; nenhuma coleta de CPF ou assinatura individual
+- [ ] Verificação de exportações TSE de comparecimento por seção com amostra real, inclusive exterior e transferências

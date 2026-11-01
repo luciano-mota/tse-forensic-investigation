@@ -20,6 +20,8 @@ const percentageFormat = new Intl.NumberFormat("pt-BR", { maximumFractionDigits:
 const state = {
     round: 2,
     uf: "",
+    municipalityCode: null,
+    municipalityName: null,
     overview: null,
     states: [],
     municipalities: [],
@@ -71,12 +73,30 @@ function setup() {
     });
     select.addEventListener("change", async event => {
         state.uf = event.target.value;
+        state.municipalityCode = null;
+        state.municipalityName = null;
         updateRegion();
         renderMap();
         await loadMunicipalities();
+    await loadForensicPanels();
     });
     $("refresh").addEventListener("click", loadData);
     $("city-search").addEventListener("input", renderMunicipalities);
+    $("city-rows").addEventListener("click", event => {
+        const row = event.target.closest("tr[data-municipality]");
+        if (!row) return;
+        const item = state.municipalities.find(city => city.code === row.dataset.municipality);
+        if (!item) return;
+        state.municipalityCode = item.code;
+        state.municipalityName = item.name;
+        loadForensicPanels();
+        $("turnout").scrollIntoView({ behavior:"smooth", block:"start" });
+    });
+    $("clear-city").addEventListener("click", () => {
+        state.municipalityCode = null;
+        state.municipalityName = null;
+        loadForensicPanels();
+    });
     $("run-comparison").addEventListener("click", runComparison);
     document.querySelectorAll(".nav-item").forEach(link => {
         link.addEventListener("click", event => {
@@ -124,6 +144,7 @@ async function loadData() {
     updateRegion();
     renderMap();
     await loadMunicipalities();
+    await loadForensicPanels();
 }
 
 function renderMetrics() {
@@ -184,7 +205,7 @@ function renderMunicipalities() {
     }
     $("city-rows").innerHTML = list.map(region => {
         const top = winner(region);
-        return '<tr><td><strong>' + escapeHtml(region.name) + '</strong></td>' +
+        return '<tr data-municipality="' + escapeHtml(region.code) + '" title="Selecionar município para auditoria"><td><strong>' + escapeHtml(region.name) + '</strong></td>' +
             '<td>' + votes(region.validVotes) + '</td>' +
             '<td>' + (top ? escapeHtml(label(top)) : "—") + '</td>' +
             '<td>' + (top ? pct(top.percentage) : "—") + '</td></tr>';
@@ -296,6 +317,7 @@ function selectUF(uf) {
     updateRegion();
     renderMap();
     loadMunicipalities();
+    loadForensicPanels();
 }
 
 function renderMap() {
@@ -351,3 +373,57 @@ function renderMap() {
 setup();
 loadData();
 loadGeometry();
+
+async function loadForensicPanels() {
+    const filters = new URLSearchParams();
+    if (state.uf) filters.set("uf", state.uf);
+    if (state.uf && state.municipalityCode) filters.set("municipalityCode", state.municipalityCode);
+    const query = filters.size ? "?" + filters : "";
+    $("audit-scope").textContent = "Recorte: " + (state.municipalityName ||
+        (state.uf ? UF_NAMES[state.uf] : "Brasil"));
+    $("clear-city").hidden = !state.municipalityCode;
+    const getSafe = async path => {
+        try { return await getJson(path + query); }
+        catch (e) { return null; }
+    };
+    const [turnout, biometric, bweb] = await Promise.all([
+        getSafe("/audits/turnout/comparison"),
+        getSafe("/audits/biometrics/comparison"),
+        getSafe("/audits/biometrics/bweb/comparison")
+    ]);
+    const display = (data, prefix, quantityField, detailField, changeKey) => {
+        if (!data) {
+            $(prefix + "-status").textContent = "API de auditoria indisponível.";
+            return;
+        }
+        const first = data.first, second = data.second;
+        const firstLoaded = first.sections > 0, secondLoaded = second.sections > 0;
+        $(prefix + "-first").textContent = firstLoaded ? pct(first[quantityField]) : "—";
+        $(prefix + "-second").textContent = secondLoaded ? pct(second[quantityField]) : "—";
+        $(prefix + "-first-info").textContent = firstLoaded ? votes(first[detailField]) + " seções" : "Sem dados";
+        $(prefix + "-second-info").textContent = secondLoaded ? votes(second[detailField]) + " seções" : "Sem dados";
+        const change = data[changeKey];
+        $(prefix + "-delta").textContent = change == null ?
+            "Dados incompletos para comparar turnos." :
+            (Number(change) > 0 ? "+" : "") + percentageFormat.format(Number(change)) +
+            " p.p. de variação (descrição, não comprovação de fraude)";
+        $(prefix + "-status").textContent = data.status === "DESCRIPTIVE_ONLY" ?
+            "Comparação descritiva disponível — verifique cobertura e fontes." :
+            "Sem cobertura de ambos os turnos.";
+    };
+    display(turnout, "turnout", "abstentionPercentage", "sections", "abstentionChangePp");
+    display(biometric, "biometric", "nonBiometricPercentage", "sections", "nonBiometricChangePp");
+    if (bweb) {
+        for (const [period, record] of [["first", bweb.first], ["second", bweb.second]]) {
+            $("bweb-" + period).textContent = record.sections ? pct(record.percentage) : "—";
+            $("bweb-" + period + "-info").textContent = record.sections ?
+                votes(record.notRecognized) + " habilitações (" + votes(record.sections) + " seções)" : "Sem dados oficiais";
+        }
+        $("bweb-delta").textContent = bweb.changePp == null ?
+            "Dados BWEB incompletos entre os turnos." :
+            (Number(bweb.changePp) > 0 ? "+" : "") + percentageFormat.format(Number(bweb.changePp)) +
+            " p.p. de variação nas falhas de reconhecimento biométrico.";
+    } else {
+        $("bweb-delta").textContent = "API BWEB indisponível.";
+    }
+}

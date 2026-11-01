@@ -2,7 +2,7 @@ CREATE TABLE import_batch (
     sha256 CHAR(64) PRIMARY KEY,
     filename TEXT NOT NULL,
     row_count BIGINT NOT NULL CHECK (row_count >= 0),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW()
 );
 
 CREATE TABLE election_vote (

@@ -38,3 +38,29 @@
 ## Conclusões permitidas
 
 Usar expressões como **divergência reproduzida**, **hipótese não testada**, **evidência insuficiente**, **conferência parcial**. Nunca concluir fraude pela existência de uma diferença estatística isolada. Nunca concluir integridade completa a partir de dados que não cobrem software e equipamento.
+
+## H6 — suposição de habilitação sem identificação adequada
+
+A hipótese de substituição indevida de eleitor exige identificar eventos de habilitação,
+o tipo de validação (biometria, sem cadastro, falha de reconhecimento), evidências
+documentais autorizadas e explicações alternativas. Não é possível inferir quem votou
+nem associar escolhas eleitorais a esses eventos. CPF/título no caderno não são
+prova de votação irregular: a identificação exige outras verificações da mesa.
+
+Os registros no caderno e as atas não devem ser publicados com informações pessoais.
+Solicitações de documentação devem respeitar a LGPD, o sigilo do voto e o acesso legal.
+
+## H7 — relato de local com pouca circulação
+
+Filas ausentes em determinado horário não estimam comparecimento diário.
+Testar variação turno a turno nas mesmas zonas e seções com aptos, comparecimento,
+abstenção e possíveis mudanças de localização/contingência; quando disponível,
+usar eventos horários agregados dos logs sem identificar eleitores.
+
+## Indicador oficial específico do BWEB
+
+A coluna `QT_ELEI_BIOM_SEM_HABILITACAO` indica eleitores com biometria
+cadastrada sem habilitação por reconhecimento biométrico. Não representa
+a totalidade dos eleitores sem digital cadastrada, e não demonstra se
+a assinatura foi realmente aposta no caderno físico. Não comparar com
+a quantidade de eleitores sem biometria como se fosse a mesma medida.
