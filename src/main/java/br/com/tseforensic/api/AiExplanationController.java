@@ -18,6 +18,13 @@ import java.util.Map;
 @RequestMapping("/api/v1/ai")
 public class AiExplanationController {
     private final ObjectMapper mapper;
+    private long requestWindowStart = System.currentTimeMillis();
+    private int requestsInWindow = 0;
+    private synchronized boolean permitRequest() {
+        long now = System.currentTimeMillis();
+        if (now - requestWindowStart >= 60_000) { requestWindowStart = now; requestsInWindow = 0; }
+        return ++requestsInWindow <= 8;
+    }
     private final HttpClient http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(8)).build();
     private static final String ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
     private static final String SYSTEM_PROMPT = """
@@ -46,6 +53,8 @@ public class AiExplanationController {
                 || input.toString().length() > 16000) {
             return ResponseEntity.badRequest().body(Map.of("error", "Recorte ou dados inválidos."));
         }
+        if (!permitRequest()) return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+            .body(Map.of("error", "Limite temporário de consultas à IA atingido."));
         try {
             String model = System.getenv().getOrDefault("OPENROUTER_MODEL", "openrouter/free");
             String data = mapper.writeValueAsString(Map.of(
