@@ -151,3 +151,10 @@ footer span { color: #8cbbbe; }
 .evidence-panel-body p { color: #94a9b9; font-size: 11px; line-height: 1.7; }
 .evidence-status { margin: 14px 0; border: 1px solid #415060; border-radius: 4px; padding: 12px; font-size: 11px; color: #a2b1c2; }
 .evidence-panel-body a { color: var(--accent); font-size: 11px; }
+
+.bweb-summary { margin-top: 20px; border-top: 1px solid #354453; padding-top: 17px; }
+.bweb-summary > strong { display: block; font-size: 10px; color: #98dce1; letter-spacing: 1px; margin-bottom: 13px; }
+.audit-scope { color: #9ab4c3; font-size: 11px; margin-top: 14px; }
+.audit-reset { color: #88d5d9; border: 1px solid #37515d; background: #172833; border-radius: 4px; padding: 7px 10px; margin-top: 10px; font-size: 10px; }
+#city-rows tr[data-municipality] { cursor: pointer; }
+#city-rows tr[data-municipality]:hover { background: #173544; }

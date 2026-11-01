@@ -110,3 +110,11 @@ Novas tabelas: `section_turnout`, `section_biometric`, `section_vote`.
 **Novas rotas**: `GET /api/v1/audits/turnout`, `/turnout/comparison`, `/turnout/sections?uf=MA&round=2&limit=100&offset=0`, `/biometrics`, `/biometrics/comparison`, `/sections/reconciliation?uf=MA`.
 
 **Render:** serviço web pode usar banco H2 efêmero apenas para exibir a interface vazia (sem dados); para ingerir e publicar resultados, configure as variáveis privadas `JDBC_DATABASE_URL`, `DB_USER` e `DB_PASSWORD` com o PostgreSQL persistente. Não use H2 para produzir relatórios probatórios.
+
+### BWEB oficial: não reconhecimento biométrico
+
+A variável `FORENSIC_BWEB_PATH=/dados/bweb_2t_2026_MA.zip` importa o BWEB de origem oficial, com `QT_ELEI_BIOM_SEM_HABILITACAO`, `QT_COMPARECIMENTO` e chaves UF/município/zona/seção/turno. Um arquivo deve cobrir integralmente cada par UF/turno que contém; importações substituem o mesmo escopo.
+
+A taxa calculada é **falha de habilitação biométrica em eleitor com biometria cadastrada / comparecimento**, não o total de votantes sem biometria. O BWEB não fornece evidência de assinatura manuscrita individual nem associação do voto a um eleitor.
+
+Endpoints `GET /api/v1/audits/biometrics/bweb?round=2&uf=MA` e `GET /api/v1/audits/biometrics/bweb/comparison?uf=MA&municipalityCode=...`.

@@ -23,7 +23,7 @@ public class ParticipationAuditService {
         return jdbc.queryForObject("""
           SELECT COUNT(*) AS sections, COALESCE(SUM(registered),0) registered,
                  COALESCE(SUM(turnout),0) turnout, COALESCE(SUM(abstentions),0) abstentions,
-                 COUNT(*) FILTER (WHERE registered <> turnout + abstentions) AS arithmetic_mismatch
+                 COALESCE(SUM(CASE WHEN registered <> turnout + abstentions THEN 1 ELSE 0 END),0) AS arithmetic_mismatch
           FROM section_turnout WHERE election_round = ?
           """ + filter, (rs, i) -> {
             long sections = rs.getLong("sections");
@@ -78,7 +78,7 @@ public class ParticipationAuditService {
                   COALESCE(SUM(no_biometric_enrollment),0) AS no_enrollment,
                   COALESCE(SUM(biometric_failed),0) AS failed,
                   COALESCE(SUM(operator_authorizations),0) AS operator_authorizations,
-                  COUNT(*) FILTER (WHERE operator_authorizations IS NULL) AS missing_operator_data
+                  COALESCE(SUM(CASE WHEN operator_authorizations IS NULL THEN 1 ELSE 0 END),0) AS missing_operator_data
            FROM section_biometric WHERE election_round = ?
            """ + filter, (rs, i) -> {
             long recognized = rs.getLong("recognized");

@@ -131,6 +131,8 @@
                             <div><span>1º TURNO</span><strong id="turnout-first">—</strong><small id="turnout-first-info">Sem dados</small></div>
                             <div><span>2º TURNO</span><strong id="turnout-second">—</strong><small id="turnout-second-info">Sem dados</small></div>
                         </div>
+                        <div id="audit-scope" class="audit-scope">Recorte: Brasil</div>
+                        <button type="button" id="clear-city" class="audit-reset" hidden>Limpar município ×</button>
                         <div class="audit-change" id="turnout-delta">Comparação ainda não disponível.</div>
                         <p>Fonte esperada: Detalhe da apuração por seção eleitoral (TSE). O número de aptos deve ser reconciliado antes de qualquer interpretação.</p>
                         <div id="turnout-status" class="evidence-status">Sem arquivo de comparecimento importado.</div>
@@ -147,6 +149,15 @@
                         <div class="audit-change" id="biometric-delta">Comparação ainda não disponível.</div>
                         <p>Separamos falta de cadastro biométrico e falha no reconhecimento. Contagens importadas exigem confirmação contra logs oficiais antes de serem consideradas auditadas.</p>
                         <div id="biometric-status" class="evidence-status">Nenhum resumo de logs importado.</div>
+                        <div class="bweb-summary">
+                            <strong>BWEB · FALHAS NO RECONHECIMENTO BIOMÉTRICO</strong>
+                            <div class="audit-metrics">
+                                <div><span>1º TURNO</span><strong id="bweb-first">—</strong><small id="bweb-first-info">Sem dados oficiais</small></div>
+                                <div><span>2º TURNO</span><strong id="bweb-second">—</strong><small id="bweb-second-info">Sem dados oficiais</small></div>
+                            </div>
+                            <div class="audit-change" id="bweb-delta">Comparação BWEB ainda não disponível.</div>
+                            <p>O campo QT_ELEI_BIOM_SEM_HABILITACAO não inclui necessariamente todos os eleitores sem biometria cadastrada. Não identifica se houve assinatura do caderno.</p>
+                        </div>
                         <a href="https://dadosabertos.tse.jus.br/dataset/resultados-2026-arquivos-transmitidos-para-totalizacao" target="_blank" rel="noopener noreferrer">Ver logs publicados pelo TSE ↗</a>
                     </div>
                 </section>

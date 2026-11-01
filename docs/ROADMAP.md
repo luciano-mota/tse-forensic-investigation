@@ -35,6 +35,7 @@ Critério de entrega dos itens futuros: testes determinísticos + documentos de 
 - [x] Modelo de agregados de eventos biométricos por seção e API de comparação (entrada derivada; parser direto de logs ainda pendente)
 - [x] Importador por seção de voto nominal/BU CSV para detecção preliminar de votos válidos acima do comparecimento
 - [x] Dashboard de abstenção e biometria com estados explícitos para dados faltantes
+- [x] Ingestão nativa de indicador BWEB `QT_ELEI_BIOM_SEM_HABILITACAO` por seção e comparação entre turnos
 - [ ] Interpretar diretamente logs oficiais (`.logjez`/`.log`) e validar a semântica de eventos, contingências e substituições de urnas
 - [ ] Recontagem RDV e confronto criptográfico com BU original
 - [ ] Comparação entre registros da mesa e logs agregados mediante procedimentos legais; nenhuma coleta de CPF ou assinatura individual
