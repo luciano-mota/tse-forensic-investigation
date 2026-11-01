@@ -239,24 +239,33 @@ def build_atlas(votes: dict, turnout: dict, sources: dict, *, observed: str) -> 
 
 
 def unchanged_official_sources(sources: dict, previous: dict) -> bool:
-    try:
-        for kind, source in sources.items():
-            old = previous.get("sources", {}).get(kind, {})
-            if not old.get("sha256") or source.get("metadata_sha256") != old.get("metadata_sha256"):
-                return False
-            if not old.get("etag") and not old.get("last_modified"):
-                return False
-            with request(source["url"], method="HEAD", timeout=30) as head:
-                if head.status != 200:
+    """Skip 450+ MB downloads only after checking TSE's own file validators.
+
+    If HEAD is blocked, a short Range GET checks the headers. In either case,
+    absent or different validators force a fresh download and a new SHA-256.
+    """
+    for kind, source in sources.items():
+        old = previous.get("sources", {}).get(kind, {})
+        if not old.get("sha256") or source.get("metadata_sha256") != old.get("metadata_sha256"):
+            return False
+        if not old.get("etag") and not old.get("last_modified"):
+            return False
+        try:
+            try:
+                response = request(source["url"], method="HEAD", timeout=30)
+            except Exception:
+                response = request(source["url"], method="GET",
+                                   headers={"Range": "bytes=0-0"}, timeout=30)
+            with response as head:
+                if head.status not in (200, 206):
                     return False
                 if old.get("etag") and head.headers.get("ETag") != old["etag"]:
                     return False
                 if old.get("last_modified") and head.headers.get("Last-Modified") != old["last_modified"]:
                     return False
-        return True
-    except Exception:
-        # HEAD unsupported or temporarily unavailable: fall back to regular GET.
-        return False
+        except Exception:
+            return False
+    return True
 
 
 def run(history: Path, *, fetch=download) -> dict:
