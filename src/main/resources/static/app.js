@@ -755,6 +755,16 @@ function renderElectionReading() {
     const content=$("analysis-content");
     const status=$("analysis-status");
     if(!content||!status)return;
+    const download=$("report-pdf");
+    if(download) {
+        const p=new URLSearchParams();
+        if(state.uf)p.set("uf",state.uf);
+        if(state.municipalityCode)p.set("municipalityCode",state.municipalityCode);
+        download.href="/api/v1/reports/presidential-2026.pdf"+(p.size?"?"+p:"");
+        download.download="tse-forensic-2026-"+(state.uf||"brasil")+
+            (state.municipalityCode?"-"+state.municipalityCode:"")+".pdf";
+        download.hidden=!state.liveAtlas;
+    }
     const reading=buildElectionReading(state.liveAtlas,{
         uf:state.uf,municipalityCode:state.municipalityCode,
         name:state.municipalityName||(state.uf?UF_NAMES[state.uf]:"Brasil")
