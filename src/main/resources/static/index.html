@@ -27,6 +27,7 @@
             <a class="nav-item" href="#turnout" data-view="turnout"><span>▥</span> Abstenção</a>
             <a class="nav-item" href="#biometrics" data-view="biometrics"><span>◈</span> Biometria</a>
             <a class="nav-item" href="#sources" data-view="sources"><span>▤</span> Fontes & evidências</a>
+            <a class="nav-item" href="#archive" data-view="archive"><span>▧</span> Acervo TSE</a>
             <a class="nav-item" href="#methodology" data-view="methodology"><span>◇</span> Metodologia</a>
         </nav>
         <div class="sidebar-bottom">
@@ -122,6 +123,37 @@
                     <tbody id="comparison-rows"><tr><td colspan="5" class="empty-table">Execute o comparativo depois de importar os dados dos dois turnos.</td></tr></tbody></table>
                 </div>
                 <div class="table-footer">Máximo de 150 resultados ordenados por variação absoluta; não é um ranking de fraude.</div>
+            </section>
+            <section class="panel archive-panel" id="archive">
+                <div class="panel-header">
+                    <div><div class="eyebrow">09 / ARQUIVO HISTÓRICO IMUTÁVEL</div><h2>Acervo de arquivos oficiais</h2></div>
+                    <span class="panel-label">CATÁLOGO CKAN · TSE</span>
+                </div>
+                <div class="archive-summary">
+                    <div><span>ÚLTIMA CONSULTA AO CATÁLOGO</span><strong id="archive-last-poll">—</strong></div>
+                    <div><span>VERSÕES DE METADADOS</span><strong id="archive-version-count">—</strong></div>
+                    <div><span>ORIGINAIS PRESERVADOS NO STORAGE</span><strong id="archive-original-count">—</strong></div>
+                </div>
+                <p class="section-copy">Cada versão registra quando o catálogo do TSE foi consultado. A cópia binária só é considerada preservada quando o download foi concluído, validado e armazenado em um bucket privado. Metadados não substituem arquivos originais.</p>
+                <div class="archive-filters">
+                    <label for="archive-search" class="sr-only">Filtrar arquivos</label>
+                    <input type="search" id="archive-search" placeholder="Buscar arquivo ou recurso..." autocomplete="off"/>
+                    <label for="archive-dataset" class="sr-only">Filtrar conjunto do TSE</label>
+                    <select id="archive-dataset">
+                        <option value="">Todos os conjuntos</option>
+                        <option value="resultados-2026">Resultados por seção</option>
+                        <option value="resultados-2026-boletim-de-urna">Boletins de urna</option>
+                        <option value="resultados-2026-arquivos-transmitidos-para-totalizacao">Arquivos BU, RDV e logs</option>
+                    </select>
+                    <button id="archive-refresh" class="refresh-button" type="button">↻ Atualizar histórico</button>
+                </div>
+                <div class="table-scroll">
+                    <table>
+                        <thead><tr><th>ARQUIVO ORIGINAL</th><th>CONSULTA UTC</th><th>VERSÃO</th><th>CÓPIA PRESERVADA</th><th>ACESSO</th></tr></thead>
+                        <tbody id="archive-rows"><tr><td colspan="5" class="empty-table">Aguardando a primeira sincronização automática.</td></tr></tbody>
+                    </table>
+                </div>
+                <div class="table-footer">Novas consultas a cada 6 horas UTC por GitHub Actions. Versões anteriores permanecem na branch archive-history e, quando o storage está configurado, no bucket de objetos.</div>
             </section>
             <div class="bottom-grid forensic-grid">
                 <section class="panel" id="turnout">

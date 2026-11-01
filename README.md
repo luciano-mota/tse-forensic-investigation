@@ -135,3 +135,21 @@ O importador considera somente eventos VOTA na data do turno, distingue habilita
 
 API: `GET /api/v1/audits/urna-logs/overview?round=2&uf=MA` e
 `GET /api/v1/audits/urna-logs/bweb-reconciliation?round=2&uf=MA`.
+
+## Sincronizador automático do TSE e acervo histórico
+
+Desde o incremento 3, o workflow `.github/workflows/tse-catalog-sync.yml` consulta os três conjuntos oficiais do TSE via CKAN a cada 6 horas UTC. Não é necessário baixar arquivos manualmente para **monitorar o catálogo**.
+
+Cada consulta grava um evento UTC na branch exclusiva `archive-history`, e qualquer mudança de metadados cria um snapshot com conteúdo imutável. Assim, mudanças no catálogo não são apagadas, e commits da branch de histórico não provocam redeploy da aplicação web.
+
+**Originais ZIP/CSV**: para gravar cópias dos bytes, habilite um bucket S3 compatível (recomenda-se Cloudflare R2 dedicado). No repositório GitHub, configure `TSE_ARCHIVE_BUCKET`, `TSE_ARCHIVE_ENDPOINT`, `TSE_ARCHIVE_REGION`, `TSE_ARCHIVE_ACCESS_KEY_ID` e `TSE_ARCHIVE_SECRET_ACCESS_KEY` em **Actions Secrets**; configure as mesmas variáveis privadas no serviço web do Render para assinar downloads.
+
+Arquivos baixados recebem SHA-256 calculado e checksum oficial SHA-512 verificado quando a correspondente `.sha512` é encontrada. A cópia será sempre preservada em chave derivada do hash, não substituindo versão anterior. Limites iniciais conservadores: até quatro arquivos de até 250 MiB a cada seis horas. Arquivos maiores ficam pendentes, com indicação de cobertura incompleta.
+
+Endpoints:
+- `GET /api/v1/archive/history`: lista pública do acervo, horário da consulta e status de cópias.
+- `GET /api/v1/archive/original?snapshot=snapshots/...<sha256>.json`: redireciona para URL privada assinada por 10 minutos **somente se o original foi armazenado com êxito**.
+
+Não confundir **metadata version** com **versão de bytes**; um repositório pode anunciar mudança sem disponibilizar outro binário e vice-versa. Uma versão eliminada antes da primeira coleta bem-sucedida não pode ser recuperada retrospectivamente.
+
+Veja também [manual do arquivo](archive/README.md) e [protocolo forense](docs/INVESTIGATION_PROTOCOL.md).

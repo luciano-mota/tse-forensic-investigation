@@ -29,7 +29,8 @@ const state = {
     mapFeatures: null,
     geoModule: null,
     error: null,
-    hasData: false
+    hasData: false,
+    archive: null
 };
 
 const $ = id => document.getElementById(id);
@@ -81,6 +82,9 @@ function setup() {
     await loadForensicPanels();
     });
     $("refresh").addEventListener("click", loadData);
+    $("archive-search").addEventListener("input", renderArchive);
+    $("archive-dataset").addEventListener("change", renderArchive);
+    $("archive-refresh").addEventListener("click", loadArchive);
     $("city-search").addEventListener("input", renderMunicipalities);
     $("city-rows").addEventListener("click", event => {
         const row = event.target.closest("tr[data-municipality]");
@@ -438,3 +442,59 @@ async function loadForensicPanels() {
         $("bweb-delta").textContent = "API BWEB indisponível.";
     }
 }
+
+async function loadArchive() {
+    const element = $("archive-rows");
+    try {
+        const index = await getJson("/archive/history");
+        state.archive = index;
+        $("archive-last-poll").textContent = index.last_polled_at ?
+            new Date(index.last_polled_at).toLocaleString("pt-BR", { timeZone:"America/Sao_Paulo" }) : "Sem execução";
+        $("archive-version-count").textContent = numberFormat.format(index.snapshots?.length ?? 0);
+        $("archive-original-count").textContent = numberFormat.format(
+            index.snapshots?.filter(item => item.original?.status === "stored").length ?? 0);
+        renderArchive();
+    } catch (error) {
+        element.innerHTML = '<tr><td colspan="5" class="empty-table">Não foi possível consultar a lista de versões. O histórico armazenado no Git não foi alterado.</td></tr>';
+    }
+}
+function renderArchive() {
+    const index = state.archive;
+    const term = $("archive-search").value.trim().toLocaleLowerCase("pt-BR");
+    const filter = $("archive-dataset").value;
+    const snapshots = (index?.snapshots || []).filter(item =>
+        (!filter || item.dataset === filter) &&
+        ((!term || [item.name,item.resource_id,item.dataset].some(value =>
+            String(value || "").toLocaleLowerCase("pt-BR").includes(term))))
+    ).slice().reverse().slice(0, 150);
+    if (!snapshots.length) {
+        $("archive-rows").innerHTML = '<tr><td colspan="5" class="empty-table">' +
+            (index?.poll_count ? "Nenhum histórico encontrado para esse filtro." :
+                "Sem primeira consulta concluída. O sincronizador será executado pelo GitHub Actions.") +
+            '</td></tr>';
+        return;
+    }
+    $("archive-rows").innerHTML = snapshots.map(item => {
+        const original = item.original?.status === "stored";
+        const officialUrl = String(item.source_url || "");
+        const source = officialUrl.startsWith("https://") ? officialUrl : "";
+        const snapshotPath = String(item.snapshot || "");
+        const snapshotUrl = "https://github.com/luciano-mota/tse-forensic-investigation/blob/archive-history/archive/" + snapshotPath.split("/").map(encodeURIComponent).join("/");
+        const safeTime = item.observed_at ?
+            new Date(item.observed_at).toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo"}) : "—";
+        const downloadUrl = "/api/v1/archive/original?snapshot=" + encodeURIComponent(snapshotPath);
+        const actions = (original ? '<a class="archive-action" href="' + downloadUrl + '">Baixar cópia ↗</a>' :
+                '<span class="not-saved">Sem cópia própria</span>') +
+            (source ? '<a class="archive-action" href="' + escapeHtml(source) +
+                '" target="_blank" rel="noopener noreferrer">Fonte TSE ↗</a>' : '');
+        return '<tr><td><strong>' + escapeHtml(item.name) +
+            '</strong><div class="archive-path">' + escapeHtml(item.dataset) + '</div></td>' +
+            '<td>' + escapeHtml(safeTime) + '</td>' +
+            '<td><a class="archive-action" href="' + escapeHtml(snapshotUrl) +
+            '" target="_blank" rel="noopener noreferrer">Ver metadados ↗</a></td>' +
+            '<td><span class="' + (original?'archived-indicator':'metadata-indicator') + '">' +
+            (original?'Original preservado':'Apenas metadados') + '</span></td>' +
+            '<td class="archive-actions">' + actions + '</td></tr>';
+    }).join("");
+}
+loadArchive();
