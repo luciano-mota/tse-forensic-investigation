@@ -502,3 +502,63 @@ footer span{color:#8bbab7}
 
 /* Increased map workspace on large displays; preserve mobile responsiveness. */
 @media (min-width:1200px){.map-panel{padding-inline:14px}.map-canvas{height:690px}.map-path{stroke-width:.55}}
+
+
+/* Immersive electoral atlas inspired by reference screenshots; independent visual identity. */
+.map-panel{min-width:0}
+.map-canvas{background:#05080a;overflow:hidden;contain:layout paint}
+.map-canvas svg{shape-rendering:geometricPrecision;max-width:100%;overflow:hidden}
+.map-canvas .map-land{will-change:transform}
+.map-path{stroke-linejoin:round}
+.map-municipality{stroke-width:.34}
+.map-loading{font-size:12px}
+.map-area{width:100%;min-width:0}
+.map-bottom{position:absolute;left:12px;bottom:14px;z-index:4;background:rgba(5,12,18,.88);border:1px solid rgba(145,190,205,.2);border-radius:9px;padding:9px 12px;display:flex;flex-wrap:wrap;gap:12px;backdrop-filter:blur(8px)}
+.map-navigation{top:auto;bottom:14px;right:12px;flex-direction:column;border-radius:9px}
+.map-navigation button{min-width:39px;min-height:40px}
+.map-navigation output{margin:5px 0}
+.map-topline{position:absolute;top:8px;left:12px;right:12px;z-index:4;pointer-events:none}
+.map-topline span:last-child{font-size:9px}
+@media(min-width:1021px){
+ .atlas-stage{grid-template-columns:minmax(0,1fr);border:0;background:transparent;gap:0}
+ .atlas-stage .results-panel{grid-row:1;padding:22px 28px;border:1px solid var(--line);border-radius:14px;margin-bottom:16px}
+ .atlas-stage .map-panel{grid-row:2;padding:0}
+ .map-canvas{height:min(82vh,890px);min-height:640px;border-radius:12px}
+ .map-area{min-height:0}
+ .map-panel>.panel-header{padding:10px 7px}
+}
+@media(max-width:1020px){
+ .atlas-stage{display:flex;flex-direction:column;min-height:0;background:transparent;border:0}
+ .atlas-stage .results-panel{order:0;padding:20px 16px;border:1px solid var(--line);border-radius:12px;margin-bottom:12px}
+ .atlas-stage .map-panel{order:1;padding:0}
+ .map-panel>.panel-header{padding:8px 5px}
+ .map-area{min-height:0}
+ .map-canvas{width:100%;height:clamp(570px,85dvh,900px);min-height:0}
+}
+@media(max-width:650px){
+ .editorial{padding-left:12px;padding-right:12px}
+ .hero{padding:30px 0}
+ .hero h1{font-size:clamp(39px,10vw,58px)}
+ .hero-controls{display:grid;grid-template-columns:minmax(0,1fr) auto}
+ .hero-controls .segmented{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr}
+ .hero-controls .segmented button{padding:13px 7px}
+ #uf-select{min-width:0;width:100%}
+ .atlas-heading{margin-bottom:16px}
+ .atlas-stage .map-panel{padding:0}
+ .atlas-stage .results-panel{padding:15px 12px}
+ .map-canvas{height:clamp(530px,76dvh,840px);min-height:0;border-radius:8px}
+ .map-topline{top:9px;left:10px;right:10px}
+ .map-topline span:last-child{display:none}
+ .map-navigation{right:7px;bottom:8px;top:auto;max-width:95px}
+ .map-navigation button{min-height:42px;min-width:42px}
+ .map-bottom{left:7px;bottom:8px;right:63px;gap:8px;padding:8px;font-size:10px}
+ .metrics{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .metric strong{font-size:clamp(21px,7vw,31px);overflow-wrap:anywhere}
+ .table-scroll{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .table-scroll table{min-width:500px}
+ #city-search{width:100%;min-width:0;font-size:16px}
+ .drift-index{left:0;right:0;width:100%;bottom:0;border-radius:0;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+ .drift-index .nav-item{min-width:0;padding:7px 2px}
+ .analysis-expression,.analysis-formula{white-space:normal;overflow-wrap:anywhere}
+}
+@media(prefers-reduced-motion:reduce){.map-canvas .map-land{will-change:auto}}
