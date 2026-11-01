@@ -340,3 +340,22 @@ footer span{color:#8bbab7}
  .reference-check{flex-wrap:wrap}.reference-check a{margin-left:0}
 }
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+
+
+/* Continuous source-provenance strip: no extra cards or dashboard grid. */
+.source-signal{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.5fr);
+ border-top:1px solid var(--line);border-bottom:1px solid var(--line-bold);
+ margin:0 0 40px;padding:16px 0 18px;gap:12px 26px;align-items:end}
+.signal-part{border-right:1px solid var(--line);padding-right:18px;min-width:0}
+.signal-part:nth-child(3){border-right:0}
+.source-label{display:block;font:700 9px/1.6 var(--mono);letter-spacing:1.4px;color:#7193a3}
+.signal-part strong{display:block;font:500 clamp(12px,1.25vw,16px)/1.5 var(--display);
+ color:#d1ebe9;margin-top:5px;overflow-wrap:anywhere}
+#live-update-status[data-status="OK"]{color:#96e8df}
+#live-update-status[data-status="STALE"],#live-update-status[data-status="DEGRADED"],
+#live-update-status[data-status="ERROR"]{color:#edcb97}
+#live-update-status[data-status="UNAVAILABLE"]{color:#cbb1b1}
+.signal-frequency{grid-column:1/-1;font:10px/1.6 var(--mono);color:#678997;letter-spacing:.2px}
+@media(max-width:650px){.source-signal{grid-template-columns:1fr 1fr;gap:18px 12px;margin-bottom:28px}
+ .signal-part:nth-child(2){border-right:0}.signal-part:nth-child(3){grid-column:1/-1}
+ .signal-part strong{font-size:13px}}

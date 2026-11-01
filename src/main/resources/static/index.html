@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <meta name="theme-color" content="#080c14"/>
+    <meta name="theme-color" content="#060c11"/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg?v=2"/>
+    <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg?v=2"/>
     <meta name="description" content="Auditoria independente, reproduzível e neutra de dados eleitorais públicos de 2026."/>
     <title>TSE Forensic | Investigação de dados eleitorais 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -37,6 +39,12 @@
                     <button id="refresh" class="refresh-button" type="button" title="Atualizar dados">↻ Atualizar</button>
                 </div>
             </section>
+    <div class="source-signal" aria-label="Atualização dos arquivos oficiais" role="status">
+      <div class="signal-part"><span class="source-label">CONSULTA AO TSE</span><strong id="live-last-check">Aguardando verificação</strong></div>
+      <div class="signal-part"><span class="source-label">DADOS NO ATLAS</span><strong id="live-snapshot-time">Consultando...</strong></div>
+      <div class="signal-part"><span class="source-label">SITUAÇÃO DA COLETA</span><strong id="live-update-status">Verificando integridade</strong></div>
+      <span class="signal-frequency">Fonte oficial · coleta a cada hora · tela verifica a cada 2 min</span>
+    </div>
     <div id="data-warning" class="data-warning" role="status" hidden></div>
 
     <div class="atlas-heading">
@@ -199,7 +207,7 @@
                         <tbody id="archive-rows"><tr><td colspan="5" class="empty-table">Aguardando a primeira sincronização automática.</td></tr></tbody>
                     </table>
                 </div>
-                <div class="table-footer">Novas consultas a cada 6 horas UTC por GitHub Actions. Versões anteriores permanecem na branch archive-history e, quando o storage está configurado, no bucket de objetos.</div>
+                <div class="table-footer">Novas consultas a cada hora (execução sujeita à agenda do GitHub Actions). Versões anteriores permanecem na branch archive-history e, quando o storage está configurado, no bucket de objetos.</div>
             </section>
 
     <div class="epilogue">

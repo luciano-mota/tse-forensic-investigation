@@ -2,7 +2,7 @@ name: Preservar versões do catálogo oficial TSE
 on:
   workflow_dispatch:
   schedule:
-    - cron: "17 */6 * * *"
+    - cron: "17 * * * *"
   push:
     branches: [main]
     paths:
