@@ -9,7 +9,7 @@ O mapa é um SVG interativo de autoria do projeto, com geometria territorial loc
 ## Fotografias
 
 O painel dos resultados apresenta as fotografias das duas candidaturas do segundo turno (números 13 e 22) a partir de arquivos com atribuição disponível no Wikimedia Commons:
-- Luiz Inácio Lula da Silva — Ricardo Stuckert / PR, fotografia de 09/07/2026, licença CC BY-SA 4.0: https://commons.wikimedia.org/wiki/File:09.07.2026_-_Presidente_Lula.jpg
+- Luiz Inácio Lula da Silva — Ricardo Stuckert / PR, fotografia de 09/07/2026, licença CC BY-SA 4.0: https://commons.wikimedia.org/wiki/File:09.07.2026_-_Presidente_Lula_-_55383588588.jpg
 - Flávio Bolsonaro — Tribunal Superior Eleitoral, foto de candidato 2026, licença CC BY 4.0: https://commons.wikimedia.org/wiki/File:2026_FLAVIO_BOLSONARO_CANDIDATO_PRESIDENTE_TSE_(280002551544)_(cropped).jpg
 
 Quando uma foto não está validada, o sistema mostra **o número da candidatura**, nunca uma imagem inventada ou da pessoa errada. As cores representam identidades partidárias aproximadas para fins de navegação e **não influenciam as métricas**. O 1º turno mostra os nomes de todas as 12 candidaturas com o respectivo número/partido.
