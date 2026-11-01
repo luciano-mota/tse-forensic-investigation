@@ -9,7 +9,6 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.font.Standard14Fonts;
 import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
-import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -539,7 +538,18 @@ public class ElectionPdfReportService {
         private static List<String> wrap(String input, PDType1Font font,float size,float width) throws IOException{
             List<String> out=new ArrayList<>();
             StringBuilder line=new StringBuilder();
-            for(String word:clean(input).split("\\s+")){
+            for(String raw:clean(input).split("\\s+")){
+                StringBuilder part=new StringBuilder();
+                for(int i=0;i<raw.length();i++){
+                    String next=part.toString()+raw.charAt(i);
+                    if(!part.isEmpty() && font.getStringWidth(next)/1000f*size>width){
+                        String chunk=part.toString();
+                        if(!line.isEmpty()){out.add(line.toString());line=new StringBuilder();}
+                        out.add(chunk);part=new StringBuilder();
+                    }
+                    part.append(raw.charAt(i));
+                }
+                String word=part.toString();
                 String candidate=line.isEmpty()?word:line+" "+word;
                 if(font.getStringWidth(candidate)/1000f*size>width && !line.isEmpty()){
                     out.add(line.toString());line=new StringBuilder(word);
