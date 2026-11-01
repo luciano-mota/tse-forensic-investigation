@@ -65,6 +65,9 @@ test("geographic normalization matches accented TSE municipality names",()=>{
 test("tap selects UF without a pointer capture, zooms to municipality boundaries",async()=>{
  const {map,canvas,log}=mock();
  await map.boot();
+ console.log("MOCK DOM BOOT",JSON.stringify({root:canvas.children.map(x=>({tag:x.tagName,
+  children:x.children.map(y=>({tag:y.tagName,count:y.children?.length,classes:y.attributes?.class,
+  first:y.children?.[0]?.attributes?.class}))}))}));
  assert.equal(shapes(canvas,"map-state").length,27);
  const svg=canvas.children[0],ma=shapes(canvas,"map-state").find(x=>x.attributes["data-place"]==="MA");
  assert.ok(ma);
