@@ -118,3 +118,20 @@ A variável `FORENSIC_BWEB_PATH=/dados/bweb_2t_2026_MA.zip` importa o BWEB de or
 A taxa calculada é **falha de habilitação biométrica em eleitor com biometria cadastrada / comparecimento**, não o total de votantes sem biometria. O BWEB não fornece evidência de assinatura manuscrita individual nem associação do voto a um eleitor.
 
 Endpoints `GET /api/v1/audits/biometrics/bweb?round=2&uf=MA` e `GET /api/v1/audits/biometrics/bweb/comparison?uf=MA&municipalityCode=...`.
+
+### Logs da urna 2026: classificação preliminar de eventos
+
+`FORENSIC_LOG_PATH=/dados/pacote_logs_2026_MA.zip FORENSIC_LOG_ROUND=2` aceita um ZIP de arquivos `*-log.jez` oficiais de 2026 ou um único `*-log.jez`, cada um com `logd.dat` (latin-1). Importação *offline*, sem API pública de upload.
+
+O importador considera somente eventos VOTA na data do turno, distingue habilitação por biometria, solicitação de habilitação manual após falha, confirmação biográfica sem biometria cadastrada e eventos não classificáveis, **contando sessões cujo voto foi efetivamente computado**. Exclui identificadores e mensagens completas do banco.
+
+- Não há identificação do votante e **não há associação ao candidato escolhido**.
+- São preservados: total de votos computados no log, contagens por categoria, não classificados, eventos após 17h **do relógio local da urna**, número de arquivos e SHA-256.
+- Para a análise depois das 17h do horário de Brasília, a conversão de fusos e os ajustes de relógio das urnas **ainda não estão implementados**; não interpretar o contador local como horário oficial de encerramento.
+- Seções com mais de um log (contingência) exigem reconciliação manual. A soma bruta pode incluir eventos repetidos; a API sinaliza essas seções.
+- As contagens preliminares devem ser confrontadas com os campos do BWEB, o comparecimento e as ocorrências da mesa.
+- Os dados de biometria derivados dos logs substituem o mesmo escopo UF/turno do importador de agregados normalizados para evitar números misturados.
+- Código de município é normalizado como número decimal sem zeros à esquerda, para casar com o nome codificado nos arquivos de log.
+
+API: `GET /api/v1/audits/urna-logs/overview?round=2&uf=MA` e
+`GET /api/v1/audits/urna-logs/bweb-reconciliation?round=2&uf=MA`.

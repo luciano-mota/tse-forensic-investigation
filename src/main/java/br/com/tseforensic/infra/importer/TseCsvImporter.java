@@ -150,7 +150,7 @@ public class TseCsvImporter {
                 continue;
             }
             String uf = required(row, "SG_UF").toUpperCase(Locale.ROOT);
-            String code = required(row, "CD_MUNICIPIO");
+            String code = String.valueOf(positiveInt(required(row, "CD_MUNICIPIO"), "CD_MUNICIPIO"));
             String municipality = required(row, "NM_MUNICIPIO");
             int candidateNumber = positiveInt(required(row, "NR_VOTAVEL"), "NR_VOTAVEL");
             long votes = Long.parseLong(required(row, "QT_VOTOS"));

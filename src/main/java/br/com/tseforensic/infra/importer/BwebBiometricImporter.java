@@ -98,7 +98,7 @@ public class BwebBiometricImporter {
             int round = number(row,"NR_TURNO");
             if (round != 1 && round != 2) continue;
             Key key=new Key(round,required(row,"SG_UF").toUpperCase(Locale.ROOT),
-                    required(row,"CD_MUNICIPIO"),number(row,"NR_ZONA"),number(row,"NR_SECAO"));
+                    String.valueOf(number(row,"CD_MUNICIPIO")),number(row,"NR_ZONA"),number(row,"NR_SECAO"));
             Count value=new Count(quantity(row,"QT_COMPARECIMENTO"),
                     quantity(row,"QT_ELEI_BIOM_SEM_HABILITACAO"));
             if (value.notRecognized > value.turnout)

@@ -28,5 +28,6 @@ class ApplicationContextTest {
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM section_biometric", Long.class)).isZero();
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM section_vote", Long.class)).isZero();
         assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM bweb_biometric_nonrecognition", Long.class)).isZero();
+        assertThat(jdbc.queryForObject("SELECT COUNT(*) FROM section_log_audit", Long.class)).isZero();
     }
 }

@@ -114,7 +114,7 @@ public class SectionAuditCsvImporter {
             int round = intValue(row,"NR_TURNO");
             if (round != 1 && round != 2) continue;
             SectionKey key = new SectionKey(round, required(row,"SG_UF").toUpperCase(Locale.ROOT),
-                    required(row,"CD_MUNICIPIO"), intValue(row,"NR_ZONA"), intValue(row,"NR_SECAO"));
+                    String.valueOf(intValue(row,"CD_MUNICIPIO")), intValue(row,"NR_ZONA"), intValue(row,"NR_SECAO"));
             Counts values = kind == Kind.TURNOUT
                     ? new Counts(required(row,"NM_MUNICIPIO"),
                         quantity(row,"QT_APTOS"),quantity(row,"QT_COMPARECIMENTO"),

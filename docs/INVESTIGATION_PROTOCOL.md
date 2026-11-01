@@ -64,3 +64,16 @@ cadastrada sem habilitação por reconhecimento biométrico. Não representa
 a totalidade dos eleitores sem digital cadastrada, e não demonstra se
 a assinatura foi realmente aposta no caderno físico. Não comparar com
 a quantidade de eleitores sem biometria como se fosse a mesma medida.
+
+## Parser dos logs 2026 — alcance e incerteza
+
+Eventos usados: início de atendimento, habilitação biométrica, pedido de dado
+para liberação manual, ano de nascimento confirmado e voto computado. Quando não
+é possível vincular a modalidade ao evento de voto na própria sequência,
+o evento entra como **não classificável**. O parser não armazena identificadores,
+linhas individuais ou imagens biométricas.
+
+O contador de votos após 17h utiliza *hora local da urna*. Sem normalização dos
+fusos e análise de correções de relógio, ele não permite afirmações sobre votos
+após 17h em Brasília. Seções com múltiplos logs requerem investigação de
+contingência e não devem ser comparadas diretamente com o BU.
