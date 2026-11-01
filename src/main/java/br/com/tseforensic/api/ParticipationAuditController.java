@@ -65,6 +65,19 @@ public class ParticipationAuditController {
         return service.compareBiometrics(normalize(uf), municipalityCode);
     }
 
+    @GetMapping("/turnout/section-shifts")
+    public Map<String,Object> sectionShifts(
+            @RequestParam @Pattern(regexp="[A-Za-z]{2}") String uf,
+            @RequestParam(required=false) @Pattern(regexp="[0-9]{1,12}") String municipalityCode,
+            @RequestParam(defaultValue="100") @Min(1) long minRegistered,
+            @RequestParam(defaultValue="15") @Min(0) @Max(100) int thresholdPp,
+            @RequestParam(defaultValue="50") @Min(1) @Max(200) int limit) {
+        return Map.of("status","DESCRIPTIVE_ONLY",
+                "limitation","Diferença entre taxas de abstenção das mesmas seções não é prova de fraude. Conferir transferência de eleitores, aptos, contingências e fonte.",
+                "findings",service.sectionChanges(normalize(uf),municipalityCode,minRegistered,
+                        java.math.BigDecimal.valueOf(thresholdPp),limit));
+    }
+
     @GetMapping("/sections/reconciliation")
     public Map<String, Object> sectionReconciliation(
             @RequestParam @Pattern(regexp = "[A-Za-z]{2}") String uf,

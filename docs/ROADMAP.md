@@ -32,6 +32,7 @@ Critério de entrega dos itens futuros: testes determinísticos + documentos de 
 
 ## Incremento 2 — comparecimento e identificação eleitoral
 - [x] Persistência por seção de aptos, comparecimento e abstenções e comparação de turnos
+- [x] Identificação de mudanças descritivas de abstenção nas mesmas seções entre 1º e 2º turno
 - [x] Modelo de agregados de eventos biométricos por seção e API de comparação (entrada derivada; parser direto de logs ainda pendente)
 - [x] Importador por seção de voto nominal/BU CSV para detecção preliminar de votos válidos acima do comparecimento
 - [x] Dashboard de abstenção e biometria com estados explícitos para dados faltantes
