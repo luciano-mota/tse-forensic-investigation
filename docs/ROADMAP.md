@@ -52,3 +52,12 @@ Critério de entrega dos itens futuros: testes determinísticos + documentos de 
 - [ ] Validar primeiro ciclo de sincronização e consistência do catálogo com resposta real CKAN
 - [ ] Expandir captura com orçamento e política de armazenamento para arquivos maiores que 250 MiB
 - [ ] Importar automaticamente lotes verificados ao PostgreSQL persistente após confirmação de escopo/layout
+
+## Incremento 4 — modo sem armazenamento de originais
+- [x] Leitor streaming de dois recursos nacionais do TSE, com ZIP temporário, hash, filtros por turno/cargo e limites
+- [x] Geração de JSON enxuto e histórico de versões dos dados derivados no GitHub
+- [x] Endpoint de espelho versionado e integração inicial com mapa, municípios, comparação e abstenção na UI
+- [x] Validação mínima de cobertura das 27 UFs e teste de regressão sintético
+- [ ] Validar execução agendada real com os dois ZIPs (possíveis erros HTTP do CDN e layout variável)
+- [ ] Teste de tela end-to-end da versão Render efetivamente publicada
+- [ ] Incluir dados oficiais de seções e biometria em processo adicional, sem extrapolar medidas de fontes diferentes
