@@ -22,11 +22,12 @@ function mock(){
  const states=["AC","AL","AM","AP","BA","CE","DF","ES","GO","MA","MG","MS","MT",
  "PA","PB","PE","PI","PR","RJ","RN","RO","RR","RS","SC","SE","SP","TO"];
  const country={type:"FeatureCollection",features:states.map((uf,i)=>poly(uf,i))};
+ const localRing=[[-42.1,-3.1],[-42.0,-3.1],[-42.0,-3.0],[-42.1,-3.0],[-42.1,-3.1]];
  const cities={type:"FeatureCollection",features:[
    {type:"Feature",properties:{nome:"São Luís",cd_geocmu:"2111300"},
-     geometry:{type:"Polygon",coordinates:[coords]}},
+     geometry:{type:"Polygon",coordinates:[localRing]}},
    {type:"Feature",properties:{nome:"Itapecuru Mirim",cd_geocmu:"2105401"},
-     geometry:{type:"Polygon",coordinates:[coords.map(([x,y])=>[x+.2,y+.2])]}}
+     geometry:{type:"Polygon",coordinates:[localRing.map(([x,y])=>[x+.3,y+.3])]}}
  ]};
  let current=null;
  const canvas=new Element("div"), zoom=new Element("output"), tooltip=new Element("div");
