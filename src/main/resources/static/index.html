@@ -53,13 +53,24 @@
     </div>
     <div class="atlas-stage">
       
+      <section class="panel results-panel" aria-labelledby="results-title">
+                    <div class="panel-header">
+                        <div><div class="eyebrow">APURAÇÃO PUBLICADA</div><h2 id="results-title">O que os números mostram</h2></div>
+                        <span class="panel-label">DADOS IMPORTADOS</span>
+                    </div>
+                    <div class="result-region"><span id="region-kicker">REGIÃO SELECIONADA</span><h3 id="region-name">Brasil</h3></div>
+                    <div id="candidate-results" class="candidate-results"><div class="empty-result">Aguardando importação dos arquivos oficiais.</div></div>
+                    <div class="result-footer"><span>Votos válidos</span><strong id="result-votes">—</strong></div>
+                    <div class="panel-note">Percentuais calculados sobre votos válidos registrados. Cores identificam candidaturas, não critérios de qualidade dos votos.</div>
+                    <div class="candidate-credits">Fotografias: Ricardo Stuckert / PR (CC BY-SA 4.0) e TSE (CC BY 4.0), via Wikimedia Commons.</div>
+                </section>
       <section class="panel map-panel" id="map" aria-labelledby="map-title">
                     <div class="panel-header">
                         <div><div class="eyebrow">DISTRIBUIÇÃO GEOGRÁFICA</div><h2 id="map-title">Cartografia dos dados</h2></div>
                         <span class="panel-label">PRESIDENTE · <span class="round-label">2º TURNO</span></span>
                     </div>
                     <div class="map-area">
-                        <div class="map-topline"><span id="map-trail">BRASIL</span><span>CLIQUE · ZOOM · ARRASTE · PINÇA</span></div>
+                        <div class="map-topline"><span id="map-trail">BRASIL</span><span class="map-hint">TOQUE PARA EXPLORAR · ARRASTE · PINÇA</span></div>
                         <div class="map-navigation" role="group" aria-label="Controles do mapa">
                             <button id="map-zoom-in" type="button" aria-label="Aproximar mapa" title="Aproximar">+</button>
                             <button id="map-zoom-out" type="button" aria-label="Afastar mapa" title="Afastar">−</button>
@@ -73,17 +84,6 @@
                         <div class="map-bottom"><span><span class="legend-dot neutral"></span> Sem dados</span><span><span class="legend-dot a"></span> 13 · PT</span><span><span class="legend-dot b"></span> 22 · PL</span></div>
                         <div id="state-fallback" class="state-fallback" hidden></div>
                     </div>
-                </section>
-      <section class="panel results-panel" aria-labelledby="results-title">
-                    <div class="panel-header">
-                        <div><div class="eyebrow">APURAÇÃO PUBLICADA</div><h2 id="results-title">O que os números mostram</h2></div>
-                        <span class="panel-label">DADOS IMPORTADOS</span>
-                    </div>
-                    <div class="result-region"><span id="region-kicker">REGIÃO SELECIONADA</span><h3 id="region-name">Brasil</h3></div>
-                    <div id="candidate-results" class="candidate-results"><div class="empty-result">Aguardando importação dos arquivos oficiais.</div></div>
-                    <div class="result-footer"><span>Votos válidos</span><strong id="result-votes">—</strong></div>
-                    <div class="panel-note">Percentuais calculados sobre votos válidos registrados. Cores identificam candidaturas, não critérios de qualidade dos votos.</div>
-                    <div class="candidate-credits">Fotografias: Ricardo Stuckert / PR (CC BY-SA 4.0) e TSE (CC BY 4.0), via Wikimedia Commons.</div>
                 </section>
       <div class="atlas-coordinate" aria-hidden="true">GEO / 26° · 00' · OBSERVAÇÃO</div>
     </div>
