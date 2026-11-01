@@ -168,6 +168,7 @@ def official_sha512(resource: dict, companion_urls: dict[str, str]) -> str | Non
 def save_original(client, resource: dict, previous: dict | None,
                   companion_urls: dict[str, str], max_bytes: int) -> dict:
     url = safe_http_url(resource["url"])
+    from botocore.exceptions import ClientError
     fmt = resource.get("format", "").lower()
     if fmt not in {"csv", "zip", "json", "txt", "sha512"}:
         return {"status": "unsupported_format"}
@@ -223,7 +224,7 @@ def save_original(client, resource: dict, previous: dict | None,
             # Check existing object by exact immutable key to make retries safe.
             try:
                 client.head_object(Bucket=bucket, Key=key)
-            except client.exceptions.ClientError as ex:
+            except ClientError as ex:
                 if ex.response.get("ResponseMetadata", {}).get("HTTPStatusCode") != 404:
                     raise
                 client.upload_fileobj(tmp, bucket, key, ExtraArgs={
@@ -265,13 +266,17 @@ def sync(packages: list[dict], *, now: str, archive_dir: Path, client=None,
         return (special, int(size) if isinstance(size, int) else max_bytes, resource["id"])
     for resource in sorted(all_resources, key=rank):
         resource_id = resource["id"]
-        safe_http_url(resource["url"])
         current = index["resources"].get(resource_id, {})
+        try:
+            safe_http_url(resource["url"])
+            trusted_source = True
+        except ValueError:
+            trusted_source = False
         fingerprint = digest(canonical(resource))
         new = fingerprint != current.get("metadata_sha256")
         capture = None
         previous = current.get("latest_original")
-        if client and downloads < max_files:
+        if client and trusted_source and downloads < max_files:
             try:
                 capture = save_original(client, resource, previous, official_companions, max_bytes)
                 if capture.get("status") == "stored" and (
@@ -319,7 +324,8 @@ def sync(packages: list[dict], *, now: str, archive_dir: Path, client=None,
         if capture:
             current["last_capture_status"] = capture["status"]
         else:
-            current["last_capture_status"] = "not_configured" if client is None else "deferred"
+            current["last_capture_status"] = ("unsafe_source" if not trusted_source else
+                                              "not_configured" if client is None else "deferred")
         index["resources"][resource_id] = current
     index["last_polled_at"] = now
     index["poll_count"] = index.get("poll_count", 0) + 1
