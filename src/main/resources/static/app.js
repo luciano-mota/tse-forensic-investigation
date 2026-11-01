@@ -139,6 +139,7 @@ async function loadData() {
     state.sources = results[2].value;
     state.hasData = state.overview.validVotes > 0;
     state.hasDbData = state.hasData;
+    if (state.hasDbData) state.liveAtlas = null;
     state.error = null;
     if (!state.hasData) {
         $("data-warning").textContent =
@@ -454,6 +455,7 @@ async function loadForensicPanels() {
     } else {
         $("bweb-delta").textContent = "API BWEB indisponível.";
     }
+    if (state.liveAtlas && !state.hasDbData) displayLiveTurnout();
 }
 
 async function loadArchive() {
