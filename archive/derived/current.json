@@ -1,0 +1,54 @@
+{
+  "status": "DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE",
+  "observed_at": "2026-11-01T04:48:56.913048+00:00",
+  "derived_version": "14908e51508ede4c1f9c6836a78615874409c1c5d526a2466bebec8b2c539566",
+  "data_path": "archive/derived/versions/14908e51508ede4c1f9c6836a78615874409c1c5d526a2466bebec8b2c539566/atlas.json",
+  "sources": {
+    "votes": {
+      "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
+      "id": "c807b826-21ff-4bcf-97ca-d86482656320",
+      "metadata_sha256": "15744e8e18ee0e46aa1de5fc3ded74521c12681045c5ff7379e0e48ef6c3cbfd",
+      "sha256": "bf43705dcc97812e48e6ca52c86c969439150cf551db2212c3b032d8265b1e69",
+      "size": 465106172,
+      "etag": "\"1bb8f4fc-65f2b00d64c68\"",
+      "last_modified": "Sat, 31 Oct 2026 23:09:22 GMT",
+      "downloaded_at": "2026-11-01T04:48:55.694357+00:00"
+    },
+    "turnout": {
+      "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip",
+      "id": "db2f6a49-a150-42a5-9aca-9ddd16d297f0",
+      "metadata_sha256": "cc5b799ded192ac6fc09b9ee5814693909d7170d39a017185a9671acbbb94ddd",
+      "sha256": "63bbdcc1bdb086372435d76e6dcd1f466478acf850710672bc3d87d586b09ed3",
+      "size": 4189972,
+      "etag": "\"3fef14-65f2ab8dce1b4\"",
+      "last_modified": "Sat, 31 Oct 2026 22:49:15 GMT",
+      "downloaded_at": "2026-11-01T04:48:49.344906+00:00"
+    }
+  },
+  "coverage": {
+    "1": {
+      "states_with_votes": 28,
+      "municipalities_with_votes": 5757,
+      "states_with_turnout": 28
+    },
+    "2": {
+      "states_with_votes": 28,
+      "municipalities_with_votes": 5757,
+      "states_with_turnout": 28
+    }
+  },
+  "parse_stats": {
+    "turnout": {
+      "lines_read": 12584,
+      "president_rows": 12584,
+      "arithmetic_mismatches": 80,
+      "csv_member": "detalhe_votacao_munzona_2026_BR.csv"
+    },
+    "votes": {
+      "lines_read": 88088,
+      "president_rows": 88088,
+      "arithmetic_mismatches": 0,
+      "csv_member": "votacao_candidato_munzona_2026_BR.csv"
+    }
+  }
+}

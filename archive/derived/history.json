@@ -1,0 +1,24 @@
+{
+  "versions": [
+    {
+      "derived_version": "14908e51508ede4c1f9c6836a78615874409c1c5d526a2466bebec8b2c539566",
+      "observed_at": "2026-11-01T04:48:56.913048+00:00",
+      "source_sha256": {
+        "votes": "bf43705dcc97812e48e6ca52c86c969439150cf551db2212c3b032d8265b1e69",
+        "turnout": "63bbdcc1bdb086372435d76e6dcd1f466478acf850710672bc3d87d586b09ed3"
+      },
+      "coverage": {
+        "1": {
+          "states_with_votes": 28,
+          "municipalities_with_votes": 5757,
+          "states_with_turnout": 28
+        },
+        "2": {
+          "states_with_votes": 28,
+          "municipalities_with_votes": 5757,
+          "states_with_turnout": 28
+        }
+      }
+    }
+  ]
+}
