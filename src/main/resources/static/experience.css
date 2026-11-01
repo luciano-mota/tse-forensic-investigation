@@ -74,8 +74,8 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible,.m
 .blink-cursor{color:var(--accent);animation:cursor 1.4s step-end infinite}
 @keyframes cursor{50%{opacity:0}}
 .atlas-instruction{font-size:12px;line-height:1.8;color:#7895a3;text-align:right}
-.atlas-stage{position:relative;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(300px,.85fr);
- min-height:635px;background:linear-gradient(145deg,rgba(16,35,45,.56),rgba(7,15,22,.58) 69%);
+.atlas-stage{position:relative;display:grid;grid-template-columns:minmax(0,2.15fr) minmax(290px,.85fr);
+ min-height:760px;background:linear-gradient(145deg,rgba(16,35,45,.56),rgba(7,15,22,.58) 69%);
  isolation:isolate;border-top:1px solid rgba(129,191,205,.36);border-bottom:1px solid var(--line)}
 .atlas-stage::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
  background:linear-gradient(90deg,transparent 50%,rgba(102,179,200,.026) 50%),
@@ -93,9 +93,9 @@ input:focus-visible,select:focus-visible,button:focus-visible,a:focus-visible,.m
 .map-panel>.panel-header h2{font-size:24px}
 .map-area{position:relative}
 .map-topline{display:flex;justify-content:space-between;color:#708c9b;font:600 10px var(--mono);letter-spacing:1px}
-.map-canvas{height:470px;display:flex;justify-content:center;align-items:center}
+.map-canvas{height:clamp(540px,53vw,690px);display:flex;justify-content:center;align-items:center;min-width:0}
 .map-loading{color:#8ba8b6;font:12px var(--mono);padding:30px}
-.map-canvas svg{width:100%;height:100%;filter:drop-shadow(0 18px 25px rgba(0,0,0,.17))}
+.map-canvas svg{width:100%;height:100%;shape-rendering:geometricPrecision;filter:drop-shadow(0 18px 25px rgba(0,0,0,.17))}
 .map-path{stroke:#0e222a;stroke-width:.7;cursor:pointer;transition:filter .18s,fill .18s,stroke .18s}
 .map-path:hover,.map-path:focus{stroke:#ddfcf7;stroke-width:2.1;filter:brightness(1.24)}
 .map-tooltip{position:absolute;z-index:5;right:8%;top:30%;padding:15px 20px;background:#0c2330;
@@ -499,3 +499,6 @@ footer span{color:#8bbab7}
   .map-topline {font-size:9px;line-height:1.6}
   #city-search {width:100%}
 }
+
+/* Increased map workspace on large displays; preserve mobile responsiveness. */
+@media (min-width:1200px){.map-panel{padding-inline:14px}.map-canvas{height:690px}.map-path{stroke-width:.55}}
