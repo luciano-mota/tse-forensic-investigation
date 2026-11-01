@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="theme-color" content="#080c14"/>
+    <meta name="description" content="Auditoria independente, reproduzível e neutra de dados eleitorais públicos de 2026."/>
+    <title>TSE Forensic | Investigação de dados eleitorais 2026</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="/styles.css"/>
+    <script type="module" src="/app.js"></script>
+</head>
+<body>
+<div class="workspace">
+    <aside class="sidebar">
+        <a class="brand" href="#overview" aria-label="TSE Forensic — início">
+            <span class="brand-symbol">◈</span>
+            <span><strong>TSE<span class="light">FORENSIC</span></strong><small>INVESTIGATION / 2026</small></span>
+        </a>
+        <div class="sidebar-eyebrow">PLATAFORMA DE ANÁLISE</div>
+        <nav class="nav" aria-label="Navegação principal">
+            <a class="nav-item active" href="#overview" data-view="overview"><span>▦</span> Visão geral</a>
+            <a class="nav-item" href="#map" data-view="map"><span>◉</span> Mapa eleitoral</a>
+            <a class="nav-item" href="#comparison" data-view="comparison"><span>⇄</span> Comparativo</a>
+            <a class="nav-item" href="#sources" data-view="sources"><span>▤</span> Fontes & evidências</a>
+            <a class="nav-item" href="#methodology" data-view="methodology"><span>◇</span> Metodologia</a>
+        </nav>
+        <div class="sidebar-bottom">
+            <div class="status-chip"><span class="dot"></span> ANÁLISE INDEPENDENTE</div>
+            <p>Dados oficiais publicados, cálculos reproduzíveis e limitações explícitas.</p>
+            <a href="https://dadosabertos.tse.jus.br/" target="_blank" rel="noopener noreferrer">Portal de Dados Abertos ↗</a>
+            <span class="sidebar-version">v0.1.0 · sem vínculo com o TSE</span>
+        </div>
+    </aside>
+    <div class="content-area">
+        <header class="topbar">
+            <div class="breadcrumb"><span>BRASIL</span><span class="crumb-slash">/</span><span>ELEIÇÕES 2026</span><span class="crumb-slash">/</span><strong id="breadcrumb-view">VISÃO GERAL</strong></div>
+            <div class="topbar-actions">
+                <span class="read-only">● LEITURA PÚBLICA</span>
+                <a class="github-link" target="_blank" rel="noopener noreferrer" href="https://github.com/luciano-mota/tse-forensic-investigation">GitHub ↗</a>
+            </div>
+        </header>
+        <main class="main">
+            <section class="hero">
+                <div class="hero-meta"><span class="accent-line"></span> OBSERVATÓRIO DE INTEGRIDADE ELEITORAL <span class="year">2026 / BR</span></div>
+                <h1>Dados abertos.<br/><em>Análise verificável.</em></h1>
+                <p>Exploramos os resultados publicados das urnas, cruzamos os turnos e documentamos divergências observáveis — sem transformar anomalias em acusações.</p>
+                <div class="hero-controls">
+                    <div class="segmented" role="group" aria-label="Turno da eleição">
+                        <button type="button" id="turn-1" data-round="1">1º TURNO</button>
+                        <button type="button" id="turn-2" data-round="2" class="selected">2º TURNO</button>
+                    </div>
+                    <label for="uf-select" class="sr-only">Unidade federativa</label>
+                    <select id="uf-select"><option value="">Brasil · Todas as UFs</option></select>
+                    <button id="refresh" class="refresh-button" type="button" title="Atualizar dados">↻ Atualizar</button>
+                </div>
+            </section>
+            <div id="data-warning" class="data-warning" role="status" hidden></div>
+            <section class="metrics" aria-label="Indicadores">
+                <article class="metric"><span>VOTOS VÁLIDOS / BASE IMPORTADA</span><strong id="metric-votes">—</strong><small id="metric-votes-note">Sem arquivos importados</small></article>
+                <article class="metric"><span>CANDIDATURAS IDENTIFICADAS</span><strong id="metric-candidates">—</strong><small>Presidência da República</small></article>
+                <article class="metric"><span>UNIDADES COM DADOS</span><strong id="metric-states">—</strong><small>Até 27 UFs + exterior</small></article>
+                <article class="metric"><span>LOTES PRESERVADOS</span><strong id="metric-sources">—</strong><small>SHA-256 registrado</small></article>
+            </section>
+            <div class="analysis-layout">
+                <section class="panel map-panel" id="map" aria-labelledby="map-title">
+                    <div class="panel-header">
+                        <div><div class="eyebrow">01 / DISTRIBUIÇÃO GEOGRÁFICA</div><h2 id="map-title">Mapa de resultados</h2></div>
+                        <span class="panel-label">PRESIDENTE · <span class="round-label">2º TURNO</span></span>
+                    </div>
+                    <div class="map-area">
+                        <div class="map-topline"><span>BRASIL / 26 ESTADOS + DF</span><span>MAPA INTERATIVO</span></div>
+                        <div id="map-canvas" class="map-canvas" aria-label="Mapa do Brasil por unidade federativa">
+                            <div class="map-loading">Carregando geometria territorial do IBGE…</div>
+                        </div>
+                        <div id="map-tooltip" class="map-tooltip" hidden></div>
+                        <div class="map-bottom"><span><span class="legend-dot neutral"></span> Sem dados</span><span><span class="legend-dot a"></span> Votável 13</span><span><span class="legend-dot b"></span> Votável 22</span></div>
+                        <div id="state-fallback" class="state-fallback" hidden></div>
+                    </div>
+                </section>
+                <section class="panel results-panel" aria-labelledby="results-title">
+                    <div class="panel-header">
+                        <div><div class="eyebrow">02 / APURAÇÃO PUBLICADA</div><h2 id="results-title">Resultado consolidado</h2></div>
+                        <span class="panel-label">DADOS IMPORTADOS</span>
+                    </div>
+                    <div class="result-region"><span id="region-kicker">REGIÃO SELECIONADA</span><h3 id="region-name">Brasil</h3></div>
+                    <div id="candidate-results" class="candidate-results"><div class="empty-result">Aguardando importação dos arquivos oficiais.</div></div>
+                    <div class="result-footer"><span>Votos válidos</span><strong id="result-votes">—</strong></div>
+                    <div class="panel-note">Percentuais calculados diretamente sobre os registros de votos válidos carregados. Não são projeções.</div>
+                </section>
+            </div>
+            <section class="panel municipalities-panel" id="municipalities">
+                <div class="panel-header">
+                    <div><div class="eyebrow">03 / GRANULARIDADE TERRITORIAL</div><h2>Municípios</h2></div>
+                    <label for="city-search" class="sr-only">Buscar município</label>
+                    <input id="city-search" type="search" placeholder="Buscar município..." autocomplete="off"/>
+                </div>
+                <div class="table-scroll">
+                    <table><thead><tr><th>MUNICÍPIO</th><th>VOTOS VÁLIDOS</th><th>MAIS VOTADO</th><th>PARTICIPAÇÃO DOS VÁLIDOS</th></tr></thead>
+                    <tbody id="city-rows"><tr><td colspan="4" class="empty-table">Selecione uma UF para visualizar seus municípios.</td></tr></tbody></table>
+                </div>
+                <div class="table-footer">A exibição de municípios depende da seleção de um estado e da importação dos arquivos.</div>
+            </section>
+            <section class="panel comparison-panel" id="comparison">
+                <div class="panel-header">
+                    <div><div class="eyebrow">04 / CONFRONTO ENTRE TURNOS</div><h2>Variações por município</h2></div>
+                    <span class="panel-label">1º TURNO <span class="arrow">→</span> 2º TURNO</span>
+                </div>
+                <p class="section-copy">Mudanças de participação entre turnos podem ser esperadas e não demonstram transferência individual de votos nem fraude. Os registros abaixo são apenas diferenças descritivas.</p>
+                <div class="comparison-controls">
+                    <label>Variação mínima <select id="threshold"><option value="10">10 p.p.</option><option value="15" selected>15 p.p.</option><option value="20">20 p.p.</option><option value="30">30 p.p.</option></select></label>
+                    <label>Mínimo de votos válidos/turno <select id="min-votes"><option value="500" selected>500</option><option value="1000">1.000</option><option value="5000">5.000</option></select></label>
+                    <button id="run-comparison" type="button" class="primary-button">Comparar turnos ↗</button>
+                </div>
+                <div class="table-scroll">
+                    <table><thead><tr><th>UF · MUNICÍPIO</th><th>VOTÁVEL</th><th>1º TURNO</th><th>2º TURNO</th><th>VARIAÇÃO (p.p.)</th></tr></thead>
+                    <tbody id="comparison-rows"><tr><td colspan="5" class="empty-table">Execute o comparativo depois de importar os dados dos dois turnos.</td></tr></tbody></table>
+                </div>
+                <div class="table-footer">Máximo de 150 resultados ordenados por variação absoluta; não é um ranking de fraude.</div>
+            </section>
+            <div class="bottom-grid">
+                <section class="panel" id="sources">
+                    <div class="panel-header"><div><div class="eyebrow">05 / PROVENIÊNCIA</div><h2>Fontes e cadeia de custódia</h2></div></div>
+                    <div id="sources-list" class="sources-list"><div class="empty-result">Nenhuma fonte importada.</div></div>
+                    <div class="source-links">
+                        <a target="_blank" rel="noopener noreferrer" href="https://dadosabertos.tse.jus.br/dataset/resultados-2026">Resultados oficiais ↗</a>
+                        <a target="_blank" rel="noopener noreferrer" href="https://dadosabertos.tse.jus.br/dataset/resultados-2026-boletim-de-urna">Boletins de urna ↗</a>
+                        <a target="_blank" rel="noopener noreferrer" href="https://dadosabertos.tse.jus.br/dataset/resultados-2026-arquivos-transmitidos-para-totalizacao">BU / RDV / logs ↗</a>
+                    </div>
+                </section>
+                <section class="panel" id="methodology">
+                    <div class="panel-header"><div><div class="eyebrow">06 / INTERPRETAÇÃO RESPONSÁVEL</div><h2>Limites desta análise</h2></div></div>
+                    <div class="methodology-list">
+                        <div><span class="method-no">01</span><p>Conferir agregados não valida, isoladamente, o software executado na urna.</p></div>
+                        <div><span class="method-no">02</span><p>Uma variação estatística não constitui, por si só, evidência de fraude.</p></div>
+                        <div><span class="method-no">03</span><p>Pesquisas são amostras com incerteza, não cópias antecipadas do resultado.</p></div>
+                        <div><span class="method-no">04</span><p>Ausência de dados importados não equivale a resultado auditado.</p></div>
+                    </div>
+                    <a class="method-link" href="/api/v1/methodology" target="_blank" rel="noopener noreferrer">Ver metodologia da API ↗</a>
+                </section>
+            </div>
+            <footer>© 2026 TSE FORENSIC INVESTIGATION · PROJETO INDEPENDENTE · SEM VÍNCULO COM O TRIBUNAL SUPERIOR ELEITORAL <span>TRANSPARÊNCIA POR DESIGN</span></footer>
+        </main>
+    </div>
+</div>
+</body>
+</html>

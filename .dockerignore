@@ -1,0 +1,6 @@
+.git
+target
+*.zip
+*.csv
+.env
+node_modules

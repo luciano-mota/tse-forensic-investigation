@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: tse-forensic-investigation
+    runtime: docker
+    plan: starter
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: JDBC_DATABASE_URL
+        sync: false
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: FORENSIC_IMPORT_PATH
+        value: ""
+      - key: JAVA_TOOL_OPTIONS
+        value: "-XX:MaxRAMPercentage=65.0"
