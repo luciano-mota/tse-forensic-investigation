@@ -158,3 +158,9 @@ footer span { color: #8cbbbe; }
 .audit-reset { color: #88d5d9; border: 1px solid #37515d; background: #172833; border-radius: 4px; padding: 7px 10px; margin-top: 10px; font-size: 10px; }
 #city-rows tr[data-municipality] { cursor: pointer; }
 #city-rows tr[data-municipality]:hover { background: #173544; }
+
+.section-changes { margin: 18px 0 4px; padding-top: 14px; border-top: 1px solid #2b3946; }
+.section-changes > strong { color: #a6dbe2; display: block; font-size: 10px; letter-spacing: .6px; padding-bottom: 10px; }
+.section-changes-list { font-size: 11px; color: #7f9bab; max-height: 330px; overflow: auto; }
+.section-change-item { display: flex; gap: 10px; justify-content: space-between; align-items: center; border-top: 1px solid #273648; padding: 9px 0; }
+.section-change-item strong { color: #e7c892; white-space: nowrap; }

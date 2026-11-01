@@ -143,6 +143,54 @@ public class ParticipationAuditService {
                 : new Object[]{round, uf, municipality};
     }
 
+    public List<SectionChange> sectionChanges(String uf, String municipality,
+                                              long minimumRegistered, BigDecimal thresholdPp,
+                                              int limit) {
+        if (uf == null) throw new IllegalArgumentException("uf obrigatória");
+        if (thresholdPp.signum() < 0 || thresholdPp.compareTo(BigDecimal.valueOf(100)) > 0)
+            throw new IllegalArgumentException("Threshold deve ser 0-100 p.p.");
+        if (minimumRegistered < 1 || limit < 1 || limit > 200)
+            throw new IllegalArgumentException("Parâmetros fora do intervalo");
+        String municipalFilter = municipality == null ? "" : " AND a.municipality_code=?";
+        Object[] params = municipality == null
+                ? new Object[]{uf,minimumRegistered,minimumRegistered,thresholdPp,limit}
+                : new Object[]{uf,minimumRegistered,minimumRegistered,municipality,thresholdPp,limit};
+        // Compare same official zone+section+municipality, and separate numerators and denominators.
+        String query = """
+            SELECT a.municipality_code, a.municipality, a.zone, a.section,
+                   a.registered first_registered, b.registered second_registered,
+                   a.turnout first_turnout, b.turnout second_turnout,
+                   a.abstentions first_absent, b.abstentions second_absent
+              FROM section_turnout a
+              JOIN section_turnout b ON a.uf=b.uf
+                 AND a.municipality_code=b.municipality_code
+                 AND a.zone=b.zone AND a.section=b.section
+             WHERE a.election_round=1 AND b.election_round=2 AND a.uf=?
+               AND a.registered>=? AND b.registered>=?
+            """ + municipalFilter + """
+               AND ABS((100.0*b.abstentions/b.registered)-
+                       (100.0*a.abstentions/a.registered)) >= ?
+             ORDER BY ABS((100.0*b.abstentions/b.registered)-
+                          (100.0*a.abstentions/a.registered)) DESC
+             LIMIT ?
+            """;
+        return jdbc.query(query,(r,i)->new SectionChange(
+                uf,r.getString("municipality_code"),r.getString("municipality"),
+                r.getInt("zone"),r.getInt("section"),
+                r.getLong("first_registered"),r.getLong("second_registered"),
+                r.getLong("first_turnout"),r.getLong("second_turnout"),
+                r.getLong("first_absent"),r.getLong("second_absent"),
+                AuditMath.percentagePointChange(
+                        r.getLong("first_absent"),r.getLong("first_registered"),
+                        r.getLong("second_absent"),r.getLong("second_registered")),
+                "VARIACAO_DESCRITIVA"),params);
+    }
+
+    public record SectionChange(String uf, String municipalityCode, String municipality,
+            int zone, int section, long firstRegistered, long secondRegistered,
+            long firstTurnout, long secondTurnout, long firstAbstentions,
+            long secondAbstentions, BigDecimal abstentionChangePp, String classification) { }
+
     public record ParticipationSummary(int round, String uf, String municipalityCode,
              long sections, long registered, long turnout, long abstentions,
              BigDecimal abstentionPercentage, long arithmeticMismatchSections, String status) { }

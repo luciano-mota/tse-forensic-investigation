@@ -386,10 +386,11 @@ async function loadForensicPanels() {
         try { return await getJson(path + query); }
         catch (e) { return null; }
     };
-    const [turnout, biometric, bweb] = await Promise.all([
+    const [turnout, biometric, bweb, shifts] = await Promise.all([
         getSafe("/audits/turnout/comparison"),
         getSafe("/audits/biometrics/comparison"),
-        getSafe("/audits/biometrics/bweb/comparison")
+        getSafe("/audits/biometrics/bweb/comparison"),
+        state.uf ? getSafe("/audits/turnout/section-shifts") : Promise.resolve(null)
     ]);
     const display = (data, prefix, quantityField, detailField, changeKey) => {
         if (!data) {
@@ -412,6 +413,16 @@ async function loadForensicPanels() {
             "Sem cobertura de ambos os turnos.";
     };
     display(turnout, "turnout", "abstentionPercentage", "sections", "abstentionChangePp");
+    const target = $("section-changes-list");
+    if (target) {
+        const items = shifts?.findings ?? [];
+        target.innerHTML = !state.uf ? "Selecione uma UF para comparar seções." :
+            !items.length ? "Nenhuma seção encontrada para o recorte ou dados ainda indisponíveis." :
+            items.slice(0,20).map(item => '<div class="section-change-item"><span>' +
+                escapeHtml(item.municipality) + ' · Z' + Number(item.zone) + '/S' + Number(item.section) +
+                '</span><strong>' + (Number(item.abstentionChangePp)>0?'+':'') +
+                percentageFormat.format(Number(item.abstentionChangePp)) + ' p.p.</strong></div>').join("");
+    }
     display(biometric, "biometric", "nonBiometricPercentage", "sections", "nonBiometricChangePp");
     if (bweb) {
         for (const [period, record] of [["first", bweb.first], ["second", bweb.second]]) {
