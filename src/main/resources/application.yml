@@ -1,0 +1,32 @@
+server:
+  port: ${PORT:8080}
+  forward-headers-strategy: framework
+spring:
+  application:
+    name: tse-forensic-investigation
+  datasource:
+    url: ${JDBC_DATABASE_URL:jdbc:h2:mem:tse_forensic;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1}
+    username: ${DB_USER:sa}
+    password: ${DB_PASSWORD:}
+    hikari:
+      maximum-pool-size: 5
+  flyway:
+    enabled: true
+  mvc:
+    problemdetails:
+      enabled: true
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: never
+forensic:
+  import:
+    path: ${FORENSIC_IMPORT_PATH:}
+    charset: ${FORENSIC_IMPORT_CHARSET:ISO-8859-1}
+logging:
+  level:
+    root: INFO
