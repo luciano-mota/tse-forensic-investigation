@@ -52,7 +52,7 @@ function mock(){
 function shapes(canvas,type){
  const found=[];
  const walk=node=>{
-   if(String(node?.attributes?.class||"").split(/\\s+/).includes(type))found.push(node);
+   if(String(node?.attributes?.class||"").split(/\s+/).includes(type))found.push(node);
    for(const child of node?.children||[])walk(child);
  };
  walk(canvas);
