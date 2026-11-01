@@ -138,13 +138,13 @@ API: `GET /api/v1/audits/urna-logs/overview?round=2&uf=MA` e
 
 ## Sincronizador automático do TSE e acervo histórico
 
-Desde o incremento 3, o workflow `.github/workflows/tse-catalog-sync.yml` consulta os três conjuntos oficiais do TSE via CKAN a cada 6 horas UTC. Não é necessário baixar arquivos manualmente para **monitorar o catálogo**.
+Desde o incremento 3, o workflow `.github/workflows/tse-catalog-sync.yml` consulta os três conjuntos oficiais do TSE via CKAN a cada hora UTC. Não é necessário baixar arquivos manualmente para **monitorar o catálogo**.
 
 Cada consulta grava um evento UTC na branch exclusiva `archive-history`, e qualquer mudança de metadados cria um snapshot com conteúdo imutável. Assim, mudanças no catálogo não são apagadas, e commits da branch de histórico não provocam redeploy da aplicação web.
 
 **Originais ZIP/CSV**: para gravar cópias dos bytes, habilite um bucket S3 compatível (recomenda-se Cloudflare R2 dedicado). No repositório GitHub, configure `TSE_ARCHIVE_BUCKET`, `TSE_ARCHIVE_ENDPOINT`, `TSE_ARCHIVE_REGION`, `TSE_ARCHIVE_ACCESS_KEY_ID` e `TSE_ARCHIVE_SECRET_ACCESS_KEY` em **Actions Secrets**; configure as mesmas variáveis privadas no serviço web do Render para assinar downloads.
 
-Arquivos baixados recebem SHA-256 calculado e checksum oficial SHA-512 verificado quando a correspondente `.sha512` é encontrada. A cópia será sempre preservada em chave derivada do hash, não substituindo versão anterior. Limites iniciais conservadores: até quatro arquivos de até 250 MiB a cada seis horas. Arquivos maiores ficam pendentes, com indicação de cobertura incompleta.
+Arquivos baixados recebem SHA-256 calculado e checksum oficial SHA-512 verificado quando a correspondente `.sha512` é encontrada. A cópia será sempre preservada em chave derivada do hash, não substituindo versão anterior. Limites iniciais conservadores: até quatro arquivos de até 250 MiB a cada hora. Arquivos maiores ficam pendentes, com indicação de cobertura incompleta.
 
 Endpoints:
 - `GET /api/v1/archive/history`: lista pública do acervo, horário da consulta e status de cópias.
@@ -156,7 +156,7 @@ Veja também [manual do arquivo](archive/README.md) e [protocolo forense](docs/I
 
 ## Modo gratuito: leitura periódica diretamente do TSE
 
-O projeto agora possui uma modalidade **sem bucket R2/S3** que recebe temporariamente os arquivos nacionais `votacao_candidato_munzona_2026.zip` e `detalhe_votacao_munzona_2026.zip`, ambos obtidos de URLs oficializadas pelo catálogo CKAN do TSE. O GitHub Actions **não conserva os ZIPs**: lê seus CSVs com `csv.DictReader`, filtra `CD_CARGO=1`/Presidente, separa turnos e municípios, calcula votos de cada candidato, aptos, comparecimento e abstenções e apaga os temporários ao final. O procedimento é agendado a cada **6 horas**, portanto **não equivale a apuração em tempo real instantâneo**. Pode haver atrasos, indisponibilidade e cache do CDN; todos precisam ser relatados.
+O projeto agora possui uma modalidade **sem bucket R2/S3** que recebe temporariamente os arquivos nacionais `votacao_candidato_munzona_2026.zip` e `detalhe_votacao_munzona_2026.zip`, ambos obtidos de URLs oficializadas pelo catálogo CKAN do TSE. O GitHub Actions **não conserva os ZIPs**: lê seus CSVs com `csv.DictReader`, filtra `CD_CARGO=1`/Presidente, separa turnos e municípios, calcula votos de cada candidato, aptos, comparecimento e abstenções e apaga os temporários ao final. O procedimento é agendado a cada **hora**, portanto **não equivale a apuração em tempo real instantâneo**. Pode haver atrasos, indisponibilidade e cache do CDN; todos precisam ser relatados.
 
 O pipeline guarda apenas agregados JSON compactos e hashes SHA-256 dos bytes efetivamente recebidos (não há cópia binária verificável). A primeira extração gera `archive/derived/current.json` e `archive/derived/versions/<hash>/atlas.json` na branch `archive-history`. Cada versão nova de arquivo original cria nova chave; versões antigas dos **dados derivados** não são sobrescritas. O endpoint `GET /api/v1/live/atlas` expõe esses agregados à interface quando a base local está vazia. A UI oferece mapa, votos por UF/município, comparação 1º×2º turno e abstenção municipal. Comparação por seção, biometria e reconstrução RDV continuam exigindo fontes próprias e **não aparecem como confirmadas**.
 
