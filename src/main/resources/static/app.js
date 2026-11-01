@@ -498,3 +498,42 @@ function renderArchive() {
     }).join("");
 }
 loadArchive();
+
+/**
+ * The drifting index highlights the current investigation area as the user reads.
+ * It is a set of anchors, not a second routing system or a hidden drawer.
+ */
+function enableDriftIndex() {
+    const items = Array.from(document.querySelectorAll(".drift-index .nav-item"));
+    const targets = items.map(item => ({
+        item,
+        target: item.dataset.view === "overview"
+            ? document.getElementById("overview")
+            : document.getElementById(item.dataset.view)
+    })).filter(pair => pair.target);
+    if (!("IntersectionObserver" in window)) return;
+    const observer = new IntersectionObserver(entries => {
+        const visible = entries.filter(entry => entry.isIntersecting)
+            .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+        if (!visible.length) return;
+        const current = targets.find(pair => pair.target === visible[0].target);
+        if (!current) return;
+        items.forEach(item => {
+            const selected = item === current.item;
+            item.classList.toggle("active", selected);
+            if (selected) item.setAttribute("aria-current", "location");
+            else item.removeAttribute("aria-current");
+        });
+    }, { rootMargin: "-18% 0px -45% 0px", threshold: [0, 0.05, 0.2, 0.5] });
+    targets.forEach(pair => observer.observe(pair.target));
+    document.addEventListener("keydown", event => {
+        const tag = document.activeElement?.tagName;
+        if (event.key !== "/" || event.ctrlKey || event.metaKey || event.altKey ||
+            ["INPUT", "TEXTAREA", "SELECT"].includes(tag)) return;
+        event.preventDefault();
+        const search = document.getElementById("city-search");
+        search.scrollIntoView({ behavior: "smooth", block: "center" });
+        search.focus({ preventScroll: true });
+    });
+}
+enableDriftIndex();
