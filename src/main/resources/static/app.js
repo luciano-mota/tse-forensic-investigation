@@ -23,7 +23,7 @@ const LABELS = {
   21:"Edmilson Costa (PCB)",35:"Wilson Grassi (Democrata)",29:"Rui Costa Pimenta (PCO)"
 };
 const CANDIDATE_PRESENTATION=Object.freeze({
-  13:{party:"PT",color:"#df4557",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/09.07.2026%20-%20Presidente%20Lula.jpg?width=240"},
+  13:{party:"PT",color:"#df4557",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/09.07.2026%20-%20Presidente%20Lula%20-%2055383588588.jpg?width=240"},
   22:{party:"PL",color:"#368dd7",picture:"https://commons.wikimedia.org/wiki/Special:Redirect/file/2026%20FLAVIO%20BOLSONARO%20CANDIDATO%20PRESIDENTE%20TSE%20%28280002551544%29%20%28cropped%29.jpg?width=240"},
   70:{party:"Avante",color:"#178a80"},14:{party:"Missão",color:"#43a5b5"},
   55:{party:"PSD",color:"#5f9d54"},30:{party:"Novo",color:"#e78a36"},

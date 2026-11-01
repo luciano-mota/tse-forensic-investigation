@@ -54,6 +54,9 @@ public class ElectionPdfReportService {
     private static final String TSE_SOURCE = "https://dadosabertos.tse.jus.br/dataset/resultados-2026";
     private static final String TSE_NORMS = "https://www.tse.jus.br/eleicoes/eleicoes-2026-content/normas-e-documentacoes";
     private static final String TSE_AUDIT = "https://www.tse.jus.br/legislacao/compilada/res/2026/resolucao-no-23-769-de-3-de-agosto-de-2026";
+    private static final String CODE_ELECTION = "https://www.tse.jus.br/legislacao/codigo-eleitoral/codigo-eleitoral-1/codigo-eleitoral-lei-nb0-4.737-de-15-de-julho-de-1965";
+    private static final String ELECTION_LAW = "https://www.planalto.gov.br/ccivil_03/leis/l9504.htm";
+    private static final String PRIVACY_LAW = "https://www2.camara.leg.br/legin/fed/lei/2018/lei-13709-14-agosto-2018-787077-normaatualizada-pl.html";
     private static final String CONSTITUTION = "https://www4.planalto.gov.br/legislacao/portal-legis/legislacao-1/constituicao";
     private final LiveElectionMirrorService mirror;
 
@@ -193,7 +196,11 @@ public class ElectionPdfReportService {
                 fmt(b.turnout()) + " - " + fmt(a.turnout()), signed(b.turnout()-a.turnout()) + " eleitores");
         w.formula("Variação absoluta de abstenções",
                 fmt(b.absent()) + " - " + fmt(a.absent()), signed(b.absent()-a.absent()) + " registros");
-        w.spacer(17);
+        w.spacer(12);
+        w.paragraph("COMPARATIVO VISUAL | 2º TURNO", BOLD, 11, AQUA, 17);
+        w.bar("13 - PT", b.candidates().getOrDefault("13",0L), b.valid(), RED);
+        w.bar("22 - PL", b.candidates().getOrDefault("22",0L), b.valid(), BLUE);
+        w.spacer(15);
         w.paragraph("VOTOS NOMINAIS POR CANDIDATURA", BOLD, 11, AQUA, 17);
         w.tableHeader("NÚMERO", "1º TURNO", "2º TURNO", "PARTICIPAÇÃO 2º");
         TreeMap<String, Long> union = new TreeMap<>(a.candidates());
@@ -294,6 +301,9 @@ public class ElectionPdfReportService {
         w.link("Normas e resoluções do TSE para as eleições de 2026", TSE_NORMS);
         w.link("Texto constitucional oficial (art. 14)", CONSTITUTION);
         w.link("Resolução TSE nº 23.769/2026", TSE_AUDIT);
+        w.link("Código Eleitoral: Lei nº 4.737/1965", CODE_ELECTION);
+        w.link("Lei das Eleições: Lei nº 9.504/1997", ELECTION_LAW);
+        w.link("Lei Geral de Proteção de Dados: Lei nº 13.709/2018", PRIVACY_LAW);
     }
 
     private void provenance(PdfWriter w, JsonNode atlas, String version) throws IOException {
@@ -501,6 +511,21 @@ public class ElectionPdfReportService {
                 text(LEFT+27,y,line,REGULAR,10,WHITE);y-=16;
             }
             spacer(7);
+        }
+        void bar(String label,long value,long total,Color color) throws IOException {
+            ensure(39);
+            text(LEFT,y,label,BOLD,10,WHITE);
+            text(PAGE_W-RIGHT-118,y,fmt(value)+" votos",REGULAR,9,MUTED);
+            y-=13;
+            cs.setNonStrokingColor(BORDER);
+            cs.addRect(LEFT,y-4,PAGE_W-LEFT-RIGHT,6);
+            cs.fill();
+            if(total>0 && value>0){
+                cs.setNonStrokingColor(color);
+                cs.addRect(LEFT,y-4,(PAGE_W-LEFT-RIGHT)*Math.min(1.0f,(float)value/total),6);
+                cs.fill();
+            }
+            y-=24;
         }
         void formula(String name,String expression,String result) throws IOException {
             ensure(65);
