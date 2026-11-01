@@ -46,6 +46,16 @@ public class AiExplanationController {
         this.analysisService = analysisService;
     }
 
+    private JsonNode selectRegion(JsonNode rounds, String uf, String code) {
+        if (!uf.isEmpty()) {
+            JsonNode region = rounds.path(uf);
+            return code.isEmpty() ? region.path("candidates") : region.path("municipalities").path(code);
+        }
+        java.util.Map<String, Long> totals = new java.util.TreeMap<>();
+        rounds.fields().forEachRemaining(state -> state.getValue().path("candidates").fields().forEachRemaining(c -> totals.merge(c.getKey(), c.getValue().asLong(), Long::sum)));
+        return totals.isEmpty() ? com.fasterxml.jackson.databind.node.MissingNode.getInstance() : mapper.valueToTree(totals);
+    }
+
     @PostMapping("/explain")
     public ResponseEntity<?> explain(@RequestBody JsonNode input) {
         String key = System.getenv("OPENROUTER_API_KEY");
@@ -70,15 +80,32 @@ public class AiExplanationController {
             first=analysisService.municipalities(1,uf).stream().filter(r -> municipalityCode.equals(r.code())).findFirst().orElse(null);
             second=analysisService.municipalities(2,uf).stream().filter(r -> municipalityCode.equals(r.code())).findFirst().orElse(null);
         }
-        if (first==null || second==null || first.validVotes()<=0 || second.validVotes()<=0)
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(
-                Map.of("error","Não há dados oficiais persistidos para os dois turnos neste recorte."));
+        JsonNode firstData, secondData;
+        if (first != null && second != null && first.validVotes() > 0 && second.validVotes() > 0) {
+            firstData = mapper.valueToTree(first);
+            secondData = mapper.valueToTree(second);
+        } else {
+            try {
+                int port = Integer.parseInt(System.getenv().getOrDefault("PORT", "8080"));
+                HttpRequest req = HttpRequest.newBuilder(URI.create("http://127.0.0.1:" + port + "/api/v1/live/atlas")).timeout(Duration.ofSeconds(8)).GET().build();
+                HttpResponse<String> snapshot = http.send(req, HttpResponse.BodyHandlers.ofString());
+                if (snapshot.statusCode() != 200) throw new IllegalStateException("Atlas unavailable");
+                JsonNode atlas = mapper.readTree(snapshot.body());
+                if (!"DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE".equals(atlas.path("status").asText())) throw new IllegalStateException("Unverified atlas");
+                firstData = selectRegion(atlas.path("rounds").path("1"), uf, municipalityCode);
+                secondData = selectRegion(atlas.path("rounds").path("2"), uf, municipalityCode);
+                if (firstData.isMissingNode() || secondData.isMissingNode()) throw new IllegalStateException("Missing data");
+            } catch (Exception e) {
+                if (e instanceof InterruptedException) Thread.currentThread().interrupt();
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(Map.of("error", "Dados dos dois turnos indisponíveis no atlas."));
+            }
+        }
         if (!permitRequest()) return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
             .body(Map.of("error", "Limite temporário de consultas à IA atingido."));
         try {
             String model = System.getenv().getOrDefault("OPENROUTER_MODEL", "openrouter/free");
             String data = mapper.writeValueAsString(Map.of(
-                "firstRound", first, "secondRound", second,
+                "firstRound", firstData, "secondRound", secondData,
                 "scope", Map.of("uf",uf,"municipalityCode",municipalityCode),
                 "calculation", "deltaVotes = candidateVotesRound2 - candidateVotesRound1; percentages use validVotes of each round",
                 "limitations", "Aggregates cannot reveal individual voter transfers; no fraud conclusions"
