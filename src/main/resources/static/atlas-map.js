@@ -157,7 +157,7 @@ export function createAtlasMap({onState,onCity,onReset,getCities,getStates,toolt
     const isCity=Boolean(uf),data=isCity?cache.get(uf):country;
     if(!data)return;
     const link=isCity?cityLinks():null;
-    svg=svgNode("svg",{viewBox:"0 0 "+W+" "+H,role:"img",
+    svg=svgNode("svg",{viewBox:"0 0 "+W+" "+H,preserveAspectRatio:"xMidYMin meet",role:"img",
       "aria-label":isCity?"Mapa interativo de municípios de "+uf:"Mapa completo dos estados brasileiros"});
     land=svgNode("g",{"class":"map-land"});
     for(const f of data.features){
