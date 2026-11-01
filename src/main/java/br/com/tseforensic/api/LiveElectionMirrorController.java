@@ -16,6 +16,13 @@ public class LiveElectionMirrorController {
     private final LiveElectionMirrorService mirror;
     public LiveElectionMirrorController(LiveElectionMirrorService mirror) { this.mirror = mirror; }
 
+    @GetMapping("/status")
+    public ResponseEntity<JsonNode> status() {
+        return ResponseEntity.ok()
+                .cacheControl(CacheControl.noStore())
+                .body(mirror.monitor());
+    }
+
     @GetMapping("/atlas")
     public ResponseEntity<JsonNode> atlas() {
         return ResponseEntity.ok()
