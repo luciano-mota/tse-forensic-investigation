@@ -32,7 +32,9 @@ const state = {
     hasData: false,
     archive: null,
     liveAtlas: null,
-    hasDbData: false
+    hasDbData: false,
+    lastSourceStatus: null,
+    loadingOfficialAtlas: false
 };
 
 const $ = id => document.getElementById(id);
@@ -132,6 +134,12 @@ async function loadData() {
         $("data-warning").textContent = message;
         $("data-warning").hidden = false;
         state.error = message;
+        state.hasDbData = false;
+        state.hasData = false;
+        state.overview = null;
+        state.states = [];
+        state.sources = [];
+        await loadOfficialAtlas();
         return;
     }
     state.overview = results[0].value;
@@ -174,7 +182,7 @@ function updateRegion() {
         return;
     }
     $("candidate-results").innerHTML = region.candidates.map(candidate => {
-        const color = candidate.number === 13 ? "var(--purple)" :
+        const color = candidate.number === 13 ? "var(--violet)" :
             candidate.number === 22 ? "var(--accent)" : "#a2b6c8";
         const safePct = Math.min(100, Math.max(0, Number(candidate.percentage)));
         return '<div class="candidate">' +
@@ -389,7 +397,7 @@ function renderMap() {
 }
 
 setup();
-loadData();
+const initialDataLoad = loadData();
 loadGeometry();
 
 async function loadForensicPanels() {
@@ -636,7 +644,8 @@ function liveVoteShifts(query) {
     return changes.sort((a,b)=>Math.abs(b.changePp)-Math.abs(a.changePp)).slice(0,150);
 }
 async function loadOfficialAtlas() {
-    if(state.hasDbData) return;
+    if(state.hasDbData || state.loadingOfficialAtlas) return;
+    state.loadingOfficialAtlas = true;
     try{
         const live=await getJson("/live/atlas");
         if(!live.rounds||live.status!=="DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE"){
@@ -675,5 +684,68 @@ async function loadOfficialAtlas() {
     }catch(error){
         $("data-warning").textContent="O espelho de totais oficiais está indisponível; nenhum resultado foi inferido.";
         $("data-warning").hidden=false;
+    }finally{
+        state.loadingOfficialAtlas = false;
     }
 }
+
+
+// "Automatic" means the page notices newly processed official snapshots.
+// The TSE's 2026 public dataset is not a continuous individual-vote feed.
+const liveTimestamp = value => {
+    if (!value) return "Ainda não disponível";
+    const date = new Date(value);
+    return Number.isFinite(date.getTime())
+        ? date.toLocaleString("pt-BR",{timeZone:"America/Sao_Paulo",
+            day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"})
+        : "Horário indisponível";
+};
+function renderSourceMonitor(data) {
+    $("live-last-check").textContent = liveTimestamp(data.checkedAt);
+    $("live-snapshot-time").textContent = liveTimestamp(data.snapshotAt);
+    const messages = {
+        OK:"Consulta concluída · dados oficiais",
+        PENDING:"Aguardando primeiro processamento",
+        STALE:"Última consulta atrasada",
+        DEGRADED:"Falha na coleta · versão anterior preservada",
+        ERROR:"A primeira extração não foi concluída",
+        UNAVAILABLE:"Status de consulta indisponível"
+    };
+    const element=$("live-update-status");
+    element.textContent=messages[data.status]||"Status desconhecido";
+    element.dataset.status=data.status||"UNKNOWN";
+    if (data.warning) element.title=data.warning;
+    else element.removeAttribute("title");
+}
+let statusPollingInProgress=false;
+async function pollOfficialStatus() {
+    if (statusPollingInProgress || document.visibilityState==="hidden") return;
+    statusPollingInProgress=true;
+    try {
+        const source=await getJson("/live/status");
+        state.lastSourceStatus=source;
+        renderSourceMonitor(source);
+        if (!state.hasDbData && source.version &&
+            source.version!==state.liveAtlas?.derived_version && !state.loadingOfficialAtlas) {
+            await loadOfficialAtlas();
+        }
+    }catch(error) {
+        renderSourceMonitor({
+            status:"UNAVAILABLE",
+            checkedAt:state.lastSourceStatus?.checkedAt,
+            snapshotAt:state.lastSourceStatus?.snapshotAt
+        });
+    }finally {
+        statusPollingInProgress=false;
+    }
+}
+function startAutomaticSourceChecks() {
+    pollOfficialStatus();
+    // Only refresh when visible; never repeat the full 2 MB atlas download
+    // if its version did not change.
+    window.setInterval(pollOfficialStatus,120000);
+    document.addEventListener("visibilitychange",() => {
+        if (document.visibilityState==="visible") pollOfficialStatus();
+    });
+}
+Promise.resolve(initialDataLoad).catch(()=>{}).finally(startAutomaticSourceChecks);
