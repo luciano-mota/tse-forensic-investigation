@@ -45,7 +45,7 @@ jobs:
           python scripts/tse_sync.py --archive-dir history/archive --max-files 4 --max-file-mb 250
       - name: Extract official national presidential results without long-term ZIP storage
         # Fail closed: never publish partial aggregates when the TSE cannot be read.
-        run: python scripts/tse_live_extract.py --history-dir history
+        run: python -m scripts.tse_live_extract --history-dir history
       - name: Record observations on archive-history without redeploying main
         if: always()
         run: |
