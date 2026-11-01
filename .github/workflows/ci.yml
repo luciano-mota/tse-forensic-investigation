@@ -24,4 +24,9 @@ jobs:
       - name: Verify catalog snapshots, immutable history, and URL allowlist
         run: python -m unittest discover -s tests -p 'test_*.py' -v
       - name: Check browser script syntax
-        run: node --check src/main/resources/static/app.js
+        run: |
+          node --check src/main/resources/static/app.js
+          node --check src/main/resources/static/atlas-map.js
+          node --check src/main/resources/static/analysis.js
+      - name: Test source-grounded geographic analysis
+        run: node --test tests/analysis.test.mjs
