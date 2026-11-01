@@ -26,8 +26,8 @@ from urllib.parse import urlsplit
 from scripts.tse_sync import safe_http_url, request, canonical, digest
 
 BASE = Path(__file__).resolve().parent.parent
-MAX_COMPRESSED = 300 * 1024 * 1024
-MAX_UNCOMPRESSED = 2_500 * 1024 * 1024 * 1024
+MAX_COMPRESSED = 768 * 1024 * 1024
+MAX_UNCOMPRESSED = 7_500 * 1024 * 1024 * 1024
 MAX_CSV_ROWS = 15_000_000
 OFFICIAL_FILES = {
     "votes": "/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
@@ -114,9 +114,21 @@ def parse_zip(path: Path, kind: str, records: dict, stats: dict):
                       if i.filename.lower().endswith(".csv") and not i.is_dir()]
         if not candidates:
             raise ValueError("Official ZIP contains no CSV")
-        if sum(i.file_size for i in candidates) > MAX_UNCOMPRESSED:
-            raise ValueError("Uncompressed content exceeds safety cap")
-        for entry in candidates:
+        # National bundles contain BR (President), BRASIL (all offices) and
+        # UF slices with overlapping records. Parsing every member double-counts!
+        national = [i for i in candidates if Path(i.filename).name.upper().endswith("_BR.CSV")]
+        if len(national) != 1:
+            national = [i for i in candidates if
+                        Path(i.filename).name.upper().endswith("_BRASIL.CSV")]
+        if len(national) != 1:
+            if len(candidates) == 1:
+                national = candidates
+            else:
+                raise ValueError("Cannot uniquely identify national TSE presidential CSV")
+        if national[0].file_size > MAX_UNCOMPRESSED:
+            raise ValueError("National uncompressed CSV exceeds safety cap")
+        stats["csv_member"] = national[0].filename
+        for entry in national:
             with container.open(entry, "r") as raw:
                 reader = csv.DictReader(io.TextIOWrapper(raw, encoding="iso-8859-1",
                                                            errors="strict", newline=""),
@@ -226,6 +238,27 @@ def build_atlas(votes: dict, turnout: dict, sources: dict, *, observed: str) -> 
             "sources": sources, "coverage": coverage, "rounds": rounds}
 
 
+def unchanged_official_sources(sources: dict, previous: dict) -> bool:
+    try:
+        for kind, source in sources.items():
+            old = previous.get("sources", {}).get(kind, {})
+            if not old.get("sha256") or source.get("metadata_sha256") != old.get("metadata_sha256"):
+                return False
+            if not old.get("etag") and not old.get("last_modified"):
+                return False
+            with request(source["url"], method="HEAD", timeout=30) as head:
+                if head.status != 200:
+                    return False
+                if old.get("etag") and head.headers.get("ETag") != old["etag"]:
+                    return False
+                if old.get("last_modified") and head.headers.get("Last-Modified") != old["last_modified"]:
+                    return False
+        return True
+    except Exception:
+        # HEAD unsupported or temporarily unavailable: fall back to regular GET.
+        return False
+
+
 def run(history: Path, *, fetch=download) -> dict:
     index_file = history / "archive/index.json"
     if not index_file.is_file():
@@ -235,11 +268,12 @@ def run(history: Path, *, fetch=download) -> dict:
     previous_path = history / "archive/derived/current.json"
     if previous_path.is_file():
         previous = json.loads(previous_path.read_text(encoding="utf-8"))
-        if all(previous.get("sources", {}).get(k, {}).get("metadata_sha256") ==
-               source["metadata_sha256"] for k, source in sources.items()):
-            # Metadata does not guarantee bytes unchanged; ETag requests MUST
-            # still happen on each cycle to capture silent CDN republishing.
-            pass
+        # Re-reading the full 450+ MB national ZIP every six hours is costly.
+        # ETag and Last-Modified provide conditional validation, not an archive.
+        if unchanged_official_sources(sources, previous):
+            return {**previous, "status": previous.get("status", "DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE"),
+                    "check_status": "SOURCE_HEADERS_UNCHANGED_NO_NEW_DOWNLOAD",
+                    "checked_at": datetime.now(timezone.utc).isoformat()}
     votes, turnout = {}, {}
     stats = {}
     with tempfile.TemporaryDirectory(prefix="tse-temporary-") as td:
@@ -272,7 +306,6 @@ def run(history: Path, *, fetch=download) -> dict:
         "observed": {str(no): published.get(str(no), 0) for no in reference},
         "limitation": "Matching published totals does not attest voting machine software integrity."
     }
-    serialized = canonical(atlas)
     # Do not create duplicate data versions if only the observation time changed.
     sources_hash = digest(canonical({k: v["sha256"] for k, v in sources.items()}))
     atlas["derived_version"] = sources_hash
@@ -307,6 +340,24 @@ if __name__ == "__main__":
     cli = argparse.ArgumentParser()
     cli.add_argument("--history-dir", default="history")
     args = cli.parse_args()
-    result = run(Path(args.history_dir))
-    print(json.dumps({k: v for k, v in result.items() if k not in ("sources",)},
-                     ensure_ascii=False))
+    directory = Path(args.history_dir)
+    last_attempt = directory / "archive/derived/last_attempt.json"
+    status = {"checked_at": datetime.now(timezone.utc).isoformat()}
+    try:
+        result = run(directory)
+        status["status"] = result.get("check_status", "EXTRACTED")
+        status["derived_version"] = result.get("derived_version")
+        print(json.dumps({k: v for k, v in result.items() if k not in ("sources",)},
+                         ensure_ascii=False))
+        code = 0
+    except Exception as error:
+        import sys
+        status["status"] = "FAILED"
+        status["error_type"] = type(error).__name__
+        status["reason"] = str(error)[:500]
+        print("TSE official ZIP extraction failed: " + status["reason"], file=sys.stderr)
+        code = 1
+    last_attempt.parent.mkdir(parents=True, exist_ok=True)
+    last_attempt.write_text(json.dumps(status, ensure_ascii=False, indent=2) + "\n",
+                            encoding="utf-8")
+    raise SystemExit(code)
