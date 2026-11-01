@@ -85,7 +85,7 @@ public class SectionVoteCsvImporter {
             if (state.scopes.add(scope)) {
                 jdbc.update("DELETE FROM section_vote WHERE election_round=? AND uf=?", round, uf);
             }
-            state.buffer.add(new VoteRow(round,uf,required(r,"CD_MUNICIPIO"),
+            state.buffer.add(new VoteRow(round,uf,String.valueOf(integer(r,"CD_MUNICIPIO")),
                     integer(r,"NR_ZONA"), integer(r,"NR_SECAO"),
                     integer(r,"NR_VOTAVEL"), longValue(r,"QT_VOTOS"),hash));
             state.rows++;

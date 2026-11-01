@@ -36,7 +36,8 @@ Critério de entrega dos itens futuros: testes determinísticos + documentos de 
 - [x] Importador por seção de voto nominal/BU CSV para detecção preliminar de votos válidos acima do comparecimento
 - [x] Dashboard de abstenção e biometria com estados explícitos para dados faltantes
 - [x] Ingestão nativa de indicador BWEB `QT_ELEI_BIOM_SEM_HABILITACAO` por seção e comparação entre turnos
-- [ ] Interpretar diretamente logs oficiais (`.logjez`/`.log`) e validar a semântica de eventos, contingências e substituições de urnas
+- [x] Leitor preliminar de logs oficiais 2026 `-log.jez` com classificação conservadora e testes sintéticos
+- [ ] Validar a classificação com logs reais, eventos alternativos, falhas de relógio, contingências e urnas substituídas (módulo não é ainda auditoria certificada)
 - [ ] Recontagem RDV e confronto criptográfico com BU original
 - [ ] Comparação entre registros da mesa e logs agregados mediante procedimentos legais; nenhuma coleta de CPF ou assinatura individual
 - [ ] Verificação de exportações TSE de comparecimento por seção com amostra real, inclusive exterior e transferências
