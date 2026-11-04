@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-04T06:32:23Z",
+  "resource_id": "c1ac1821-8a58-4e29-b1da-e51ecf30d60d",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "2cc68f358fa80587fcb5085bf2e74904aaf9846da777e015d73de3f5badcef9b",
+  "resource": {
+    "id": "c1ac1821-8a58-4e29-b1da-e51ecf30d60d",
+    "name": "BR - Histórico totalização Presidente 1º Turno - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/historicototalizacao/Historico_Totalizacao_Presidente_BR_1T_2026.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-11-03T18:10:47.683803",
+    "last_modified": null,
+    "metadata_modified": "2026-11-03T18:11:25.853850",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}

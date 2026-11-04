@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-04T06:32:23Z",
+  "resource_id": "9b187273-b08f-417f-a16b-c6bb1815242e",
+  "dataset": "resultados-2026",
+  "metadata_sha256": "808b7b41ceea5f18b6c02bb1aac1192ce63c3d3bf719d384f399f0e547c86ec2",
+  "resource": {
+    "id": "9b187273-b08f-417f-a16b-c6bb1815242e",
+    "name": "BR - Histórico totalização Presidente 2º Turno - 2026",
+    "url": "https://cdn.tse.jus.br/estatistica/sead/eleicoes/eleicoes2026/historicototalizacao/Historico_Totalizacao_Presidente_BR_2T_2026.zip",
+    "format": "CSV",
+    "size": null,
+    "created": "2026-11-03T18:11:25.877500",
+    "last_modified": null,
+    "metadata_modified": "2026-11-03T18:12:15.798322",
+    "hash": "",
+    "mimetype": "application/zip",
+    "dataset": "resultados-2026"
+  }
+}
