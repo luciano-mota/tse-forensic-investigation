@@ -279,6 +279,26 @@
           "states_with_turnout": 28
         }
       }
+    },
+    {
+      "derived_version": "005b6de88ac65cde3a26e978dca1d550a13a7ca799e42ad3e501aa124c16fe07",
+      "observed_at": "2026-11-05T11:08:18.102987+00:00",
+      "source_sha256": {
+        "votes": "a8c723e40d7f11eb61b1dd2a71f068bea5e9ef3af1d7426ef09192d353bf5c0d",
+        "turnout": "59615fc80c091b7ad3d3e51b9b2baf60ae08ca7a06546cae46eb1b3b60447d58"
+      },
+      "coverage": {
+        "1": {
+          "states_with_votes": 28,
+          "municipalities_with_votes": 5757,
+          "states_with_turnout": 28
+        },
+        "2": {
+          "states_with_votes": 28,
+          "municipalities_with_votes": 5757,
+          "states_with_turnout": 28
+        }
+      }
     }
   ]
 }
