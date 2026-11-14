@@ -1,8 +1,8 @@
 {
   "status": "DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE",
-  "observed_at": "2026-11-13T17:47:32.574146+00:00",
-  "derived_version": "53d3ea1b53fee8eb08dae8dcdd9ecf53b49d17f3f68ae63629ec44ab0cc394ff",
-  "data_path": "archive/derived/versions/53d3ea1b53fee8eb08dae8dcdd9ecf53b49d17f3f68ae63629ec44ab0cc394ff/atlas.json",
+  "observed_at": "2026-11-14T06:32:10.218765+00:00",
+  "derived_version": "58812e12383cd789bdc684638a7c78f413a84b2bd55ef7c3da52356618bb5fb2",
+  "data_path": "archive/derived/versions/58812e12383cd789bdc684638a7c78f413a84b2bd55ef7c3da52356618bb5fb2/atlas.json",
   "sources": {
     "votes": {
       "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
@@ -12,17 +12,17 @@
       "size": 455718059,
       "etag": "\"1b29b4ab-6602ab589268e\"",
       "last_modified": "Fri, 13 Nov 2026 16:13:30 GMT",
-      "downloaded_at": "2026-11-13T17:47:31.715256+00:00"
+      "downloaded_at": "2026-11-14T06:32:09.336034+00:00"
     },
     "turnout": {
       "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip",
       "id": "db2f6a49-a150-42a5-9aca-9ddd16d297f0",
       "metadata_sha256": "cc5b799ded192ac6fc09b9ee5814693909d7170d39a017185a9671acbbb94ddd",
-      "sha256": "9af93471d336f038d060fb0c372a41879714ec10956e839c51654a268f567500",
-      "size": 4187604,
-      "etag": "\"3fe5d4-66026f927db02\"",
-      "last_modified": "Fri, 13 Nov 2026 11:46:05 GMT",
-      "downloaded_at": "2026-11-13T17:47:28.608724+00:00"
+      "sha256": "57610e1d720fff840c9193ebe1172dd0f95ee5fbb51be7d11079b268990eee83",
+      "size": 4182180,
+      "etag": "\"3fd0a4-660302c940e76\"",
+      "last_modified": "Fri, 13 Nov 2026 22:44:42 GMT",
+      "downloaded_at": "2026-11-14T06:31:49.539541+00:00"
     }
   },
   "coverage": {
