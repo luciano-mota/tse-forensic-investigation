@@ -1,28 +1,28 @@
 {
   "status": "DERIVED_FROM_OFFICIAL_FILES_NOT_ORIGINAL_ARCHIVE",
-  "observed_at": "2026-11-21T11:15:30.072880+00:00",
-  "derived_version": "e717a589c8dd8c08aa2c727b3df65dc6092b60311f3494b11b6605b113ee23ea",
-  "data_path": "archive/derived/versions/e717a589c8dd8c08aa2c727b3df65dc6092b60311f3494b11b6605b113ee23ea/atlas.json",
+  "observed_at": "2026-11-21T18:16:54.545789+00:00",
+  "derived_version": "6ff56a829412836ab04e1cae1da74c8de72bf7e7a86f29027dd3b01701ab9598",
+  "data_path": "archive/derived/versions/6ff56a829412836ab04e1cae1da74c8de72bf7e7a86f29027dd3b01701ab9598/atlas.json",
   "sources": {
     "votes": {
       "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/votacao_candidato_munzona/votacao_candidato_munzona_2026.zip",
       "id": "c807b826-21ff-4bcf-97ca-d86482656320",
       "metadata_sha256": "15744e8e18ee0e46aa1de5fc3ded74521c12681045c5ff7379e0e48ef6c3cbfd",
-      "sha256": "50699d5bdba72fc3449f7b3367bc452090c67329c16995d35336be6cdd1f6c0b",
-      "size": 458293501,
-      "etag": "\"1b5100fd-660c5d421a16e\"",
-      "last_modified": "Sat, 21 Nov 2026 09:17:24 GMT",
-      "downloaded_at": "2026-11-21T11:15:28.483292+00:00"
+      "sha256": "2df7b8d54e5376be2bce09a23d51a57d82bb6d23ab2e9a6646c6c7f8728b25d7",
+      "size": 464229695,
+      "etag": "\"1bab953f-660cb9e2e96b2\"",
+      "last_modified": "Sat, 21 Nov 2026 16:11:48 GMT",
+      "downloaded_at": "2026-11-21T18:16:52.974934+00:00"
     },
     "turnout": {
       "url": "https://cdn.tse.jus.br/estatistica/sead/odsele/detalhe_votacao_munzona/detalhe_votacao_munzona_2026.zip",
       "id": "db2f6a49-a150-42a5-9aca-9ddd16d297f0",
       "metadata_sha256": "cc5b799ded192ac6fc09b9ee5814693909d7170d39a017185a9671acbbb94ddd",
-      "sha256": "7ccb612251d9185b36b07467a60226396459ba62cddf5f8b22e7354251cd16dc",
-      "size": 4186295,
-      "etag": "\"3fe0b7-660bd1a286224\"",
-      "last_modified": "Fri, 20 Nov 2026 22:52:44 GMT",
-      "downloaded_at": "2026-11-21T11:12:13.977401+00:00"
+      "sha256": "ecfa6b986c2bc656d9858540c691efeae335b847770f8436a53648fd6f062fe5",
+      "size": 4188383,
+      "etag": "\"3fe8df-660c80be01ffb\"",
+      "last_modified": "Sat, 21 Nov 2026 11:56:09 GMT",
+      "downloaded_at": "2026-11-21T18:00:34.956383+00:00"
     }
   },
   "coverage": {
